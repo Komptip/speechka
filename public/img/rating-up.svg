@@ -1,0 +1,16 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN"
+ "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+ width="24.000000pt" height="24.000000pt" viewBox="0 0 512.000000 512.000000"
+ preserveAspectRatio="xMidYMid meet" v-on:click="rate(post, true)">
+
+<g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)"
+:fill="[post['grade'] == true ? '#07A23B' : '#000000']" stroke="none">
+<path d="M2450 3939 c-35 -15 -304 -279 -1223 -1197 -693 -692 -1187 -1193
+-1198 -1215 -63 -121 -11 -279 112 -341 68 -33 162 -36 229 -5 35 15 284 259
+1118 1092 l1072 1072 1073 -1072 c833 -833 1082 -1077 1117 -1092 67 -31 161
+-28 229 5 123 62 175 220 112 341 -11 22 -505 523 -1198 1215 -919 918 -1188
+1182 -1223 1197 -30 14 -66 21 -110 21 -44 0 -80 -7 -110 -21z"/>
+</g>
+</svg>

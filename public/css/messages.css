@@ -1,0 +1,52 @@
+.messages {
+	width: 310px;
+
+	box-sizing: border-box;
+
+	padding-left: 20px;
+	padding-right: 20px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+
+	box-shadow: 0px -1px 24px -16px rgba(66, 68, 90, 1);
+
+	display: flex;
+	align-items: center;
+
+	border-radius: 10px;
+
+	position: fixed;
+
+	right: 20px;
+	top: 70px;
+
+	background-color: white;
+
+	cursor: pointer;
+
+	animation: shake 0.5s;
+}
+
+@keyframes shake {
+  0% {
+  	right:  -250px;
+  },
+  20% {
+  	right: 70px;
+  }
+}
+
+.messages img {
+	max-width: 24px;
+}
+
+.messages p {
+	margin-left: 10px;
+}
+
+@media only screen and (max-width: 980px) {
+	.messages {
+		transform: scale(2.0);
+		margin-right: 200px;
+	}
+}

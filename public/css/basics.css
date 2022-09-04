@@ -1,0 +1,59 @@
+[v-cloak] {
+    display:none;
+}
+
+body {
+	margin: 0;
+	background-color: #F2F2F2;
+}
+
+* {
+	font-family: Roboto;
+}
+
+a {
+	color: #3766a9;
+}
+
+.content {
+	width: 100%;
+	display: flex;
+
+	margin-bottom: 50px;
+}
+
+.positive {
+	color: #07A23B;
+}
+
+.negative {
+	color: #e52e3a;
+}
+
+.noactive {
+	pointer-events: none !important;
+	opacity: 0.5 !important;
+}
+
+.rating p {
+	margin-left: 5px !important;
+	margin-right: 5px !important;
+}
+
+.rating svg {
+	padding-left: 5px;
+	padding-right: 5px;
+
+	border-radius: 50%;
+}
+
+.rating svg:hover {
+	background-color: #F2F2F2;
+}
+
+.ban {
+	width: 24px;
+	margin-left: 50px;
+
+	cursor: pointer;
+}

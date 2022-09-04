@@ -1,0 +1,205 @@
+.window-background {
+	width: 100vw;
+	height: 100vh;
+
+	top: 0;
+
+	left: 0;
+
+	position: fixed;
+
+	background-color: rgba(0, 0, 0, 0.25);
+
+	display: flex;
+
+	align-items: center;
+	justify-content: center;
+}
+
+.window {
+	width: 440px;
+	min-height: 600px;
+
+	border-radius: 20px;
+
+	display: flex;
+	flex-direction: column;
+
+	background-color: white;
+}
+
+.window .close {
+	max-width: 24px;
+	padding: 16px;
+	margin-left: auto;
+
+	cursor: pointer;
+}
+
+.window .box {
+	padding-left: 50px;
+	padding-right: 50px;
+
+	min-height: 300px;
+
+	display: flex;
+	flex-direction: column;
+
+	margin: auto 0;
+}
+
+.window .box #recaptcha {
+	margin: 0 auto;
+	margin-bottom: 10px;
+}
+
+.window .box .headline {
+	font-size: 24px;
+	line-height: 36px;
+	margin-bottom: 16px;
+}
+
+.window .box input {
+	border: 0;
+	margin-bottom: 16px;
+	padding-left: 11px;
+	padding-right: 11px;
+
+	background-color: #F5F5F5;
+	box-shadow: 1px solid rgba(0,0,0,0.03);
+	border-radius: 7px;
+
+	font-size: 16px;
+
+	outline: none;
+
+	box-sizing: border-box;
+
+	height: 46px;
+}
+
+.window .box button {
+	height: 48px;
+
+	box-sizing: border-box;
+
+	font-size: 14px;
+
+	background-color: #4683D9;
+
+	color: white;
+
+	border-radius: 7px;
+
+	cursor: pointer;
+
+	border: 0;
+}
+
+.window .switcher {
+	margin-left: 50px;
+	margin-right: 50px;
+	margin-bottom: 70px;
+}
+
+.window .password-reset {
+	margin-left: 50px;
+	margin-right: 50px;
+	margin-bottom: 0px;
+}
+
+.window .switcher span {
+	color: #3766a9;
+
+	cursor: pointer;
+}
+
+.window .error {
+
+	margin-top: 10px;
+	margin-bottom: 0px;
+
+	height: 50px;
+
+	border-radius: 7px;
+
+	background-color: #F04569;
+
+	color: white;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	cursor: pointer;
+
+	text-align: center;
+
+	box-sizing: border-box;
+
+	padding-left: 10px;
+	padding-right: 10px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
+
+.window.settings .box {
+	margin-bottom: 50px;
+}
+
+.window.settings button {
+	margin-top: 20px;
+}
+
+.window.settings .sub-headline {
+	margin-bottom: 8px;
+}
+
+.window.settings .upload-photo {
+	margin-bottom: 10px;
+	border: 2px solid #4683D9;
+	background-color: white;
+	margin-top: auto;
+
+	color: #4683D9;
+}
+
+.window.settings .file-uploader {
+	display: none;
+}
+
+.window.settings .photo-preview {
+	width: 150px;
+	height: 150px;
+
+	margin: 0 auto;
+
+	margin-top: 10px;
+	margin-bottom: 10px;
+
+	background-color: black;
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+
+@media only screen and (max-width: 980px) {
+	.window {
+		transform: scale(2.0);
+	}
+
+	.window .box button {
+		font-size: 20px;
+	}
+
+	.window .box p {
+		font-size: 22px;
+	}
+
+	.window .box input {
+		font-size: 20px;
+	}
+
+	.window .close {
+		max-width: 32px;
+	}
+}
