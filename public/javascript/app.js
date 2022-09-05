@@ -98,7 +98,7 @@ var app = Vue.createApp(
 					url = 'https://' + url;
 				}
 				let link = new URL(url);
-				if(link.hostname === 'www.youtube.com' || link.hostname === 'youtube.com'){
+				if(link.hostname === 'www.youtube.com' || link.hostname === 'youtube.com' || link.hostname === 'youtu.be' || link.hostname === 'www.youtu.be'){
 					let regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
 				    let match = url.match(regExp);
 

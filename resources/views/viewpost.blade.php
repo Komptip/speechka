@@ -60,16 +60,18 @@
 								<li v-for="item in element['data']['list_items']" v-html="item"></li>
 							</ol>
 							<template v-if="element['type'] == 'link'">
-								<a class="link-url" :href="element['data']['url']">@{{ element['data']['url'] }}</a>
 								<template v-if="parseURL(element['data']['url'])['type'] == 'youtube'">
 									<div class="ytb-video">
 										<iframe :src="'https://www.youtube.com/embed/' + parseURL(element['data']['url'])['key']" allowfullscreen></iframe>
 									</div>
 								</template>
-								<template v-if="parseURL(element['data']['url'])['type'] == 'twitter'">
+								<template v-else-if="parseURL(element['data']['url'])['type'] == 'twitter'">
 									<div class="twitter">
 										<blockquote class="twitter-tweet"><a :href="element['data']['url']"></a></blockquote>
 									</div>
+								</template>
+								<template v-else>
+									<a class="link-url" :href="element['data']['url']">@{{ element['data']['url'] }}</a>
 								</template>
 							</template>
 						</template>
