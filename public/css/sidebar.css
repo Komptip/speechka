@@ -4,11 +4,14 @@
 
 	background-color: #F2F2F2;
 
-	position: static;
+	position: sticky;
+	top: 60px;
 
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+
+	z-index: 1500000;
 }
 
 .sidebar.mobile {
@@ -55,6 +58,7 @@
 
 .sidebar .button p {
 	color: black;
+	font-weight: 400;
 }
 
 .sidebar.mobile {
@@ -90,6 +94,8 @@
 
 	.sidebar.mobile {
 		display: flex;
+		position: fixed;
+		top: auto;
 	}
 
 	.sidebar.mobile .left {

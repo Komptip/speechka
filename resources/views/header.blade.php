@@ -2,7 +2,10 @@
 	<div class="left">
 		<img src="/img/sidebar.svg" class="sidebar-btn" v-on:click="sidebarHidded = !sidebarHidded">
 		<img src="/img/sidebar.svg" class="sidebar-btn mobile" v-on:click="sidebarHiddenMobile = !sidebarHiddenMobile">
-		<a class="logo" href="/">Спичка</a>
+		<a class="logo" href="/">
+			<img src="/img/logo.svg" />
+			<p>Спичка</p>
+		</a>
 	</div>
 	<div class="right" v-if="!user">
 		<div class="new-post" v-on:click="auth = true;">

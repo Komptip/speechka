@@ -9,6 +9,8 @@ header {
 	position: sticky;
 	top: 0;
 
+	z-index: 1000000;
+
 
 	justify-content: space-between;
 }
@@ -47,12 +49,14 @@ header .logo {
 
 header .logo img {
 	max-height: 35px;
-	margin-left: 20px;
+	margin-right: 10px;
 }
 
 header .new-post {
 	background-color: white;
 	margin-right: 50px;
+
+	font-weight: 500;
 
 	cursor: pointer;
 
@@ -177,8 +181,12 @@ header .button img {
 		max-width: 125px;
 	}
 
-	header .logo {
+	header .logo p {
 		display: none;
+	}
+
+	header .logo img {
+		max-height: 120px;
 	}
 
 	header .new-post {
@@ -219,5 +227,11 @@ header .button img {
 
 	header .account .drop-down .button p {
 		font-size: 40px;
+	}
+}
+
+@media only screen and (max-width: 715px) {
+	header .logo img {
+		display: none;
 	}
 }

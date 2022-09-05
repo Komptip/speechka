@@ -48,5 +48,6 @@
 	.messages {
 		transform: scale(2.0);
 		margin-right: 200px;
+		margin-top: 170px;
 	}
 }

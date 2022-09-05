@@ -21,6 +21,7 @@ var app = Vue.createApp(
 				postSended: false,
 				profileViewType: false,
 				settingsIsLoading: false,
+				postIsDeleting: false,
 				commentsreplies: {
 					'start': {
 						'attachment': false,
@@ -89,6 +90,33 @@ var app = Vue.createApp(
 			viewPost: function(post){
 				window.location.href = '/p/' + post.id;
 			},
+			parseURL: function(url){
+				setTimeout(function(){
+					twttr.widgets.load();
+				}, 100);
+				if(!url.startsWith('http://') && !url.startsWith('https://')){
+					url = 'https://' + url;
+				}
+				let link = new URL(url);
+				if(link.hostname === 'www.youtube.com' || link.hostname === 'youtube.com'){
+					let regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+				    let match = url.match(regExp);
+
+				    if (match && match[2].length == 11) {
+				        return {'type': 'youtube', 'key': match[2]};
+				    } else {
+				        return false;
+				    }
+				}
+
+				else if(link.hostname === 'www.twitter.com' || link.hostname === 'twitter.com'){
+					return {'type': 'twitter'};
+				}
+
+				else {
+					return {'type': 'none'};
+				}
+			},
 			sharePost: function(post){
 				const el = document.createElement('textarea');
 				el.value = window.location.hostname + '/p/' + post.id;
@@ -100,6 +128,11 @@ var app = Vue.createApp(
 				document.execCommand('copy');
 				document.body.removeChild(el);
 				app.throwMessage('Ссылка на пост скопирована', 'success');
+			},
+			hideMobileSidebar: function(event){
+				if(event.target.classList.contains('sidebar')){
+					app.sidebarHiddenMobile = true;
+				}
 			},
 			handleResponse: function(data){
 				if(data.action == 'error'){
@@ -124,6 +157,50 @@ var app = Vue.createApp(
 			},
 			viewCommentOrigin: function(id){
 				window.location.href = '/p/' + id;
+			},
+			deletePost: function(post){
+				post.showMore = false;
+				if(app.postIsDeleting){
+					return;
+				}
+				app.postIsDeleting = true;
+				let formData = new FormData();
+				formData.append('post_id', post.id);
+				fetch('/data/post/delete', {
+					method: 'POST',
+					body: formData,
+					headers: {'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')}
+				})
+				.then((response) => {
+					app.postIsDeleting = false;
+					app.catchResponse(response);
+					return response.json();
+				})
+				.then((data) => {
+					app.handleResponse(data);
+				});
+			},
+			republishPost: function(post){
+				post.showMore = false;
+				if(app.postIsDeleting){
+					return;
+				}
+				app.postIsDeleting = true;
+				let formData = new FormData();
+				formData.append('post_id', post.id);
+				fetch('/data/post/recreate', {
+					method: 'POST',
+					body: formData,
+					headers: {'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')}
+				})
+				.then((response) => {
+					app.postIsDeleting = false;
+					app.catchResponse(response);
+					return response.json();
+				})
+				.then((data) => {
+					app.handleResponse(data);
+				});
 			},
 			getUserData: function(){
 				fetch('/data/auth/get', {
@@ -336,7 +413,27 @@ var app = Vue.createApp(
 				window.location.replace('/post/new');	
 			},
 			publishPost: function(event){
+				app.postSended = true;
 				editor.save().then((outputData) => {
+					if(event.target.closest('.large').querySelector('h1').innerText.length < 1){
+						if(outputData.blocks.length < 1){
+							app.postSended = false;
+							return app.throwMessage('Пост не может быть пустым', 'error');
+						} else {
+							if(outputData.blocks.length == 1){
+								if(outputData.blocks[0].type == 'paragraph'){
+									let convertTextarea = document.createElement("textarea");
+								    convertTextarea.innerHTML = outputData.blocks[0].data.text;
+								    let convertedText =  convertTextarea.value;
+								    convertTextarea.remove();
+									if(convertedText.replaceAll(/\s/g,'').length < 1){
+										app.postSended = false;
+										return app.throwMessage('Пост не может быть пустым', 'error');		
+									}
+								}
+							}
+						}
+					}
 					if(event.target.closest('.large').querySelector('h1').innerText.length > 120){
 						return app.throwMessage('Заголвок не может привышать 120 символов', 'error');
 					}
@@ -347,6 +444,7 @@ var app = Vue.createApp(
 						headers: {'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')}
 					})
 					.then((response) => {
+						app.postSended = false;
 						app.catchResponse(response);
 						return response.json();
 					})
@@ -546,6 +644,11 @@ var app = Vue.createApp(
 
 				return ratingval;
 			},
+			hidePost: function(post){
+				post.showMore = false;
+				post.hidden = true;
+				app.throwMessage(`Пост #${post.id} успешно скрыт из ленты`);
+			},
 			loadPosts: function(data){
 				if(app.posts === false){
 					app.posts = [];
@@ -574,6 +677,8 @@ var app = Vue.createApp(
 
 					data.forEach(function(post){
 						post.ratingValue = app.countRating(post['rating']);
+						post.showMore = false;
+						post.hidden = false;
 						app.posts.push(post);
 					});
 
@@ -872,15 +977,15 @@ var app = Vue.createApp(
 		 "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
 		<svg version="1.0" xmlns="http://www.w3.org/2000/svg"
 		 width="24.000000pt" height="24.000000pt" viewBox="0 0 512.000000 512.000000"
-		 preserveAspectRatio="xMidYMid meet">
+		 preserveAspectRatio="xMidYMid meet" transform="scale(1, -1)">
 
 			<g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)"
 			:fill="[grade == true ? '#07A23B' : '#000000']" stroke="none">
-			<path d="M2450 3939 c-35 -15 -304 -279 -1223 -1197 -693 -692 -1187 -1193
-			-1198 -1215 -63 -121 -11 -279 112 -341 68 -33 162 -36 229 -5 35 15 284 259
-			1118 1092 l1072 1072 1073 -1072 c833 -833 1082 -1077 1117 -1092 67 -31 161
-			-28 229 5 123 62 175 220 112 341 -11 22 -505 523 -1198 1215 -919 918 -1188
-			1182 -1223 1197 -30 14 -66 21 -110 21 -44 0 -80 -7 -110 -21z"/>
+			<path d="M277 4009 c-103 -24 -197 -103 -244 -204 -23 -51 -28 -73 -27 -145 0
+			-160 -96 -52 1192 -1342 777 -778 1160 -1155 1191 -1172 73 -39 158 -53 234
+			-37 34 7 83 24 108 37 31 17 414 394 1191 1172 1288 1290 1192 1182 1192 1342
+			0 72 -4 94 -28 147 -84 184 -308 262 -491 171 -26 -13 -388 -368 -1037 -1016
+			l-998 -997 -998 997 c-652 651 -1011 1003 -1037 1016 -76 37 -170 49 -248 31z"/>
 			</g>
 		</svg>
 
@@ -957,7 +1062,7 @@ var app = Vue.createApp(
 					<img v-if="!app.comments[id]['active']" src="/img/unban.svg" class="ban" v-on:click="app.unremoveComment(id)"/>
 				</template>
 				<div class="rating">
-					<rating-up :grade="app.comments[id]['grade']" v-on:click="app.rateComment(app.comments[id], true)"></rating-up>
+					<rating-down :grade="app.comments[id]['grade']" v-on:click="app.rateComment(app.comments[id], false)"></rating-down>
 					<p :class="app.comments[id]['rating_value'] > 0 ? 'positive' : app.comments[id]['rating_value'] < 0 ? 'negative' : ''">{{ app.comments[id]['rating_value'] }}</p>
 					<div class="rating-list" v-if="Object.keys(app.comments[id]['rating']).length > 0">
 						<a class="user" v-for="(rate, id) in app.comments[id]['rating']" :href="'/u/' + id">
@@ -967,7 +1072,7 @@ var app = Vue.createApp(
 							<p :class="rate == 1 ? 'positive' : 'negative'">{{ app.users[id]['name'] }}</p>
 						</a>
 					</div>
-					<rating-down :grade="app.comments[id]['grade']" v-on:click="app.rateComment(app.comments[id], false)"></rating-down>
+					<rating-up :grade="app.comments[id]['grade']" v-on:click="app.rateComment(app.comments[id], true)"></rating-up>
 				</div>
 			</div>
 			<div class="comment-text">

@@ -12,6 +12,8 @@
 
 	display: flex;
 
+	z-index: 2000000;
+
 	align-items: center;
 	justify-content: center;
 }

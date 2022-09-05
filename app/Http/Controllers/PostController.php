@@ -83,6 +83,9 @@ class PostController extends Controller
             'list' => [
                 'items',
                 'style'
+            ],
+            'link' => [
+                'url'
             ]
         ]; 
 
@@ -94,6 +97,9 @@ class PostController extends Controller
 
             ],
             'i' => [
+
+            ],
+            'br' => [
 
             ],
             '#text' => [
@@ -161,16 +167,16 @@ class PostController extends Controller
                 }
 
                 if(!is_array($value)){
-                    if(strlen($value) > 250){
+                    if(strlen($value) > 5000){
                         return [
                             'action' => 'error',
-                            'data' => 'Текст и/или атрибут одного из элементов привышает 250 символов'
+                            'data' => 'Текст и/или атрибут одного из элементов привышает 5000 символов'
                         ];
                     }
 
                     if(strlen($value) > 0){
                         $doc = new DOMDocument();
-                        $doc->loadHTML("test" . $value);    
+                        @$doc->loadHTML("test" . $value);    
 
                         $result = $doc->getElementsByTagName('*');
 
@@ -331,6 +337,96 @@ class PostController extends Controller
         $response = new Response(json_encode(['action' => 'redirect', 'data' => '/p/' . $newPost->id]));
 
         return $response;
+    }
+
+    public function delete(Request $request){
+        $user = AuthController::isUserAuth($request);
+
+        if($user === false){
+            return [
+                'action' => 'error',
+                'data' => 'Действие запрещенно'
+            ];
+        }
+
+        $validate = Validator::make($request->all(), [
+            'post_id' => 'required|integer|min:1'
+        ],[
+            'post_id.required' => 'ID поста не получен',
+            'post_id.integer' => 'IO должен быть числом',
+            'post_id.min' => "Некорректный ID"
+        ]);
+
+        if($validate->fails()){
+            return [
+                'action' => 'error',
+                'data' => $validate->errors()->first()
+            ];
+        } 
+
+        $data = $request->all();
+
+        $post = Posts::Where(['id' => $data['post_id'], 'user_id' => $user->id])->first();
+
+        if($post === null){
+            return [
+                'action' => 'error',
+                'data' => 'Пост не найден'
+            ];
+        }
+
+        $post->active = 0;
+        $post->save();
+
+        return [
+            'action' => 'success',
+            'data' => 'Пост успешно удален'
+        ];
+    }
+
+    public function recreate(Request $request){
+        $user = AuthController::isUserAuth($request);
+
+        if($user === false){
+            return [
+                'action' => 'error',
+                'data' => 'Действие запрещенно'
+            ];
+        }
+
+        $validate = Validator::make($request->all(), [
+            'post_id' => 'required|integer|min:1'
+        ],[
+            'post_id.required' => 'ID поста не получен',
+            'post_id.integer' => 'IO должен быть числом',
+            'post_id.min' => "Некорректный ID"
+        ]);
+
+        if($validate->fails()){
+            return [
+                'action' => 'error',
+                'data' => $validate->errors()->first()
+            ];
+        } 
+
+        $data = $request->all();
+
+        $post = Posts::Where(['id' => $data['post_id'], 'user_id' => $user->id])->first();
+
+        if($post === null){
+            return [
+                'action' => 'error',
+                'data' => 'Пост не найден'
+            ];
+        }
+
+        $post->active = 1;
+        $post->save();
+
+        return [
+            'action' => 'success',
+            'data' => 'Пост успешно восстановлен'
+        ];
     }
 
     public function getPost(Request $request){

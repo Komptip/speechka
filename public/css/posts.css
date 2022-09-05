@@ -34,6 +34,45 @@
 	align-items: center;
 }
 
+.posts .post .meta .more {
+	margin-left: auto;
+	display: flex;
+	justify-content: right;
+}
+
+.posts .post .meta .more .btn {
+	max-width: 24px;
+	cursor: pointer;
+}
+
+.posts .post .meta .more .list {
+	width: 150px;
+	position: absolute;
+	margin-top: 20px;
+	background-color: white;
+
+	border-radius: 8px;
+	box-shadow: 0px 0px 32px -20px rgba(66, 68, 90,1);
+
+	display: flex;
+	flex-direction: column;
+
+	z-index: 1000;
+}
+
+.posts .post .more .list p {
+	padding-left: 10px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+
+	margin: 0;
+	cursor: pointer;
+}
+
+.posts .post .more .list p:hover {
+	background-color: rgba(0, 0, 0, 0.02);
+}
+
 .posts .meta .icon {
 	width: 22px;
 	height: 22px;
@@ -53,6 +92,8 @@
 
 	cursor: pointer;
 
+	font-weight: 500;
+
 	color: black;
 	text-decoration: none;
 }
@@ -65,6 +106,7 @@
 	font-size: 14px;
 	color: gray;
 	margin-left: 20px;
+	font-weight: 400;
 }
 
 .posts .post .title {
@@ -90,6 +132,15 @@
 .posts .post .image {
 	margin-left: 20px;
 	margin-right: 20px;
+	display: flex;
+	flex-direction: column;
+}
+
+.posts .post .image .caption {
+	font-size: 14px;
+	margin-right: auto;
+	margin-left: 10px;
+	margin-bottom: 0px;
 }
 
 .posts .post .text {
@@ -98,8 +149,15 @@
 	padding-left: 20px;
 	padding-right: 20px;
 
+	word-wrap: break-word;
+
 	margin-top: 10px;
 	margin-bottom: 10px;
+}
+
+.posts .post .post-content .twitter {
+	display: flex;
+	justify-content: center;
 }
 
 .posts .post .data {
@@ -131,6 +189,31 @@
 .posts .post .post-content li {
 	margin-top: 10px;
 	margin-bottom: 10px;
+}
+
+.posts .post .post-content .link-url {
+	text-decoration: none;
+	margin: 5px 20px;
+	word-wrap: break-word;
+}
+
+.posts .post .post-content .ytb-video {
+	 position: relative;
+  width: calc(100% - 40px);
+  box-sizing: border-box;
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-bottom: 20px;
+  padding-bottom: calc(56.25% - calc(40px * 0.5625));
+}
+
+.posts .post .post-content .ytb-video iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
 }
 
 .posts .post .post-content .image {
@@ -178,6 +261,7 @@
 
 .posts .action p {
 	margin-left: 5px;
+	font-weight: 500;
 }
 
 .posts .data .rating {
@@ -194,6 +278,7 @@
 .posts .rating p {
 	margin-left: 10px;
 	margin-right: 10px;
+	font-weight: 500;
 
 	cursor: context-menu;
 }
@@ -309,11 +394,24 @@
 	margin-left: auto;
 	margin-right: 50px;
 
+	font-weight: 500;
+
 	outline: none;
 }
 
 .posts .large .new-post:hover {
 	background-color: #437CCE;
+}
+
+.posts .large .link {
+	width: 100%;
+	background: #fff;
+  border: 1px solid rgba(0,0,0,.13);
+  border-top-color: rgba(0,0,0,.29);
+  font-size: 15px;
+  padding: 7px 30px 7px 12px;
+  box-sizing: border-box;
+  outline: none;
 }
 
 .new-post-title {
@@ -334,6 +432,10 @@
 }
 
 @media only screen and (max-width: 980px) {
+	.posts {
+		width: 0%;
+	}
+
 	.posts .large .new-post {
 		height: 90px;
 		width: 300px;
@@ -385,13 +487,31 @@
 	}
 
 	.posts .post .post-content .text {
-		font-size: 48px;
+		font-size: 36px;
 		margin-top: 15px;
 		margin-bottom: 15px;
 	}
 
+	.posts .post .post-content .link-url {
+		margin: 5px 20px;
+		font-size: 36px;
+	}	
+
+	.posts .post .post-content .ytb-video {
+		width: 100%;
+		padding-bottom: 56.25%;
+		margin: 0;
+		margin-bottom: 20px;
+	}
+
 	.posts .post .post-content li {
 		font-size: 48px;
+	}
+
+	.posts .post .post-content .link-url {
+		font-size: 40px;
+		margin-top: 15px;
+		margin-bottom: 15px;
 	}
 
 	.posts .post .data {
@@ -416,7 +536,24 @@
 
 	.posts .post .data .rating p {
 		font-size: 40px;
-		margin-left: 50px;
-		margin-right: 50px;
+		margin-left: 20px !important;
+		margin-right: 20px !important;
+	}
+
+	.posts .post .meta .more .btn {
+		max-width: 72px;
+	}
+
+	.posts .post .meta .more .list {
+		width: 400px;
+		margin-top: 60px;
+		border-radius: 24px;
+	}
+
+	.posts .post .meta .more .list p {
+		font-size: 42px;
+		padding-top: 20px;
+		padding-left: 30px;
+		padding-bottom: 20px;
 	}
 }

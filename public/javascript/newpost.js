@@ -13,6 +13,7 @@ const editor = new EditorJS({
         placeholder: 'Нажмите Tab для выбора инструмента'
       }
     },
+    link, 
     list: {
       class: List,
       shortcut: 'CMD+SHIFT+L'

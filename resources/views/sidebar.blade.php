@@ -11,7 +11,7 @@
 	</div>
 </div>
 
-<div class="sidebar mobile" v-if="!sidebarHiddenMobile">
+<div class="sidebar mobile" v-if="!sidebarHiddenMobile" v-on:click="hideMobileSidebar">
 	<div class="left">
 		<div class="buttons">
 			<a class="button" href="/popular">

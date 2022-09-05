@@ -36,6 +36,7 @@
 .comments .counter {
 	font-size: 20px;
 	flex-grow: 1;
+	font-weight: 500;
 }
 
 .comment {
@@ -68,6 +69,7 @@
 
 .comment .meta .name-and-date .name {
 	margin: 0;
+	font-weight: 500;
 
 	cursor: pointer;
 }
@@ -114,13 +116,14 @@
 	cursor: context-menu;
 }
 
-.c.comment .rating .rating-list .user, .comments .comment .rating .rating-list .user p {
+.comment .rating .rating-list .user, .comments .comment .rating .rating-list .user p {
 	cursor: pointer;
 }
 
-..comment-text {
+.comment-text {
 	font-size: 17px;
 	white-space: pre-wrap;
+	font-weight: 400;
 }
 
 .comment-text p {
@@ -157,7 +160,7 @@
 }
 
 .sub-comments .branch {
-	width: 30px;
+	min-width: 30px;
 	box-sizing: border-box;
 	border-left: 2px solid #E6E6E6;
 
