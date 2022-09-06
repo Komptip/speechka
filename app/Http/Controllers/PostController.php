@@ -597,7 +597,7 @@ class PostController extends Controller
         $data = $request->all();
 
         if(isset($data['black-list'])){
-            return Posts::where('id', '<', min($data['black-list']))->where(['active', 1])->latest()->limit(10)->pluck('id')->toArray();
+            return Posts::where([['id', '<', min($data['black-list'])], ['active', 1]])->latest()->limit(10)->pluck('id')->toArray();
         } else {
             return Posts::latest()->where('active', 1)->take(10)->pluck('id')->toArray();
         }
