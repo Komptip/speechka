@@ -24,6 +24,8 @@
 
 	cursor: pointer;
 
+	z-index: 20000000;
+
 	animation: shake 0.5s;
 }
 
