@@ -7,7 +7,7 @@
 			</div>
 			<div class="comment-content">
 				<div class="meta">
-					<a class="icon" :href="'/u/' + sComments[comment].author_id">
+					<a class="icon" :href="'/u/' + sComments[comment].author_id" :style="'background-image: url(' + users[sComments[comment]['author_id']].picture + ')'">
 						
 					</a>
 					<div class="name-and-date">
