@@ -28,7 +28,7 @@
 								<br/>
 								Для сброса пароля нажмите на кнопку ниже:
 							</p>
-							<a href="{{ config('app.url') }}/password-reset/{{ $token }}">
+							<a href="{{ config('app.url') }}password-reset/{{ $token }}">
 								<button>Восстановить пароль</button>
 							</a>
 						</div>
