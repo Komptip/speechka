@@ -16,12 +16,16 @@ var app = Vue.createApp(
 				commentsIsLoading: false,
 				users: {},
 				message: false,
+				sComments: false,
 				comments: false,
 				commentsOrder: false,
 				postSended: false,
 				profileViewType: false,
 				settingsIsLoading: false,
 				postIsDeleting: false,
+				sideCommentsHidden: false,
+				sideComments: false,
+				sideCommentsPostsTitles: false,
 				commentsreplies: {
 					'start': {
 						'attachment': false,
@@ -65,7 +69,7 @@ var app = Vue.createApp(
 		beforeMount(){	
 			this.getUserData();
 
-			let beforeMountFunctions = ['beforeMountProfile', 'beforeMountFeed', 'beforeMountViewpost'];
+			let beforeMountFunctions = ['beforeMountProfile', 'beforeMountFeed', 'beforeMountViewpost', 'beforeMountSidecomments'];
 
 			beforeMountFunctions.forEach(function(beforeMountFunction){
 				if(typeof window[beforeMountFunction] === "function"){
@@ -685,7 +689,7 @@ var app = Vue.createApp(
 					app.postsIsLoading = false;
 				});
 			},
-			loadComments: function(data){
+			loadComments: function(data, sideComments=false){
 				if(app.comments === false){
 					app.comments = [];
 				}
@@ -708,11 +712,20 @@ var app = Vue.createApp(
 					});
 
 				 	data.forEach(function(comment){
-				 		if(comment['sub_comments']){
-				 			comment['sub_comments']['opened'] = true;
+				 		if(!sideComments){
+					 		if(comment['sub_comments']){
+					 			comment['sub_comments']['opened'] = true;
+					 		}
+					 		comment['rating_value'] = app.countRating(comment['rating']);
+
+							app.comments[comment['id']] = comment;
+				 		} else {
+				 			if(!app.sComments){
+				 				app.sComments = [];
+				 			}
+
+				 			app.sComments[comment['id']] = comment;	
 				 		}
-				 		comment['rating_value'] = app.countRating(comment['rating']);
-						app.comments[comment['id']] = comment;
 					});
 
 					app.commentsIsLoading = false;
@@ -977,7 +990,7 @@ var app = Vue.createApp(
 		 "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
 		<svg version="1.0" xmlns="http://www.w3.org/2000/svg"
 		 width="24.000000pt" height="24.000000pt" viewBox="0 0 512.000000 512.000000"
-		 preserveAspectRatio="xMidYMid meet" transform="scale(1, -1)">
+		 preserveAspectRatio="xMidYMid meet" style="display: block;transform:rotate(180deg);">
 
 			<g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)"
 			:fill="[grade == true ? '#07A23B' : '#000000']" stroke="none">

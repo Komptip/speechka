@@ -97,6 +97,8 @@
 				</div>
 			</div>
 
+			@include('sidecomments')
+
 		</div>
 
 		@include('authwindows')

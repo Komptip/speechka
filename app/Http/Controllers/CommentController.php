@@ -201,6 +201,11 @@ class CommentController extends Controller
         return Comments::where(['post_id' => $post->id])->get()->pluck('id')->toArray();
     }
 
+    function newest(Request $request){
+
+        return Comments::where(['active' => 1])->latest()->take(10)->get()->pluck('id')->toArray();
+    }
+
     function getComment(Request $request){
         $user = AuthController::isUserAuth($request);
 

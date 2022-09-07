@@ -467,8 +467,9 @@
 	}
 
 	.posts .post .meta .icon {
-		width: 72px;
-		height: 72px;
+		width: 60px;
+		height: 60px;
+		border-radius: 15px;
 	}
 
 	.posts .post .meta .author {
@@ -520,22 +521,22 @@
 	}
 
 	.posts .post .data .action img {
-		width: 64px;
+		width: 50px;
 	}
 
 	.posts .post .data .action p {
-		font-size: 48px;
+		font-size: 44px;
 		margin-left: 20px;
 	}
 
 	.posts .post .data .rating svg {
-		max-width: 62px;
-		width: 62px;
-		height: 62px;
+		max-width: 50px;
+		width: 50px;
+		height: 50px;
 	}
 
 	.posts .post .data .rating p {
-		font-size: 40px;
+		font-size: 44px;
 		margin-left: 20px !important;
 		margin-right: 20px !important;
 	}

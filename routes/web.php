@@ -43,11 +43,14 @@ Route::post('/data/auth/new-password-set', 'App\Http\Controllers\AuthController@
 Route::post('/data/post/create', 'App\Http\Controllers\PostController@create');
 Route::post('/data/post/get', 'App\Http\Controllers\PostController@getPost');
 
+Route::post('/data/post/get-titles-by-ids', 'App\Http\Controllers\PostController@getTitle');
+
 Route::post('/data/post/delete', 'App\Http\Controllers\PostController@delete');
 Route::post('/data/post/recreate', 'App\Http\Controllers\PostController@recreate');
 
 Route::post('/data/comment/create', 'App\Http\Controllers\CommentController@create');
 Route::post('/data/comment/get-by-post', 'App\Http\Controllers\CommentController@getCommentsByPost');
+Route::post('/data/comment/newest', 'App\Http\Controllers\CommentController@newest');
 Route::post('/data/comment/get', 'App\Http\Controllers\CommentController@getComment');
 
 Route::post('/data/post/newest', 'App\Http\Controllers\PostController@newest');

@@ -458,8 +458,6 @@ class PostController extends Controller
 
         $data = $request->all();
 
-        $orderedArray = [];
-
         $query = Posts::whereIn('id', $data['ids']);
 
         foreach ($data['ids'] as $id) { 
@@ -676,6 +674,48 @@ class PostController extends Controller
         foreach ($posts as $post) {
             array_push($postsToSend, $post->id);
         }
+
+        return $postsToSend;
+    }
+
+    public function getTitle(Request $request){
+        $validate = Validator::make($request->all(), [
+            'ids' => 'required|array|max:10',
+            'ids.*' => 'required|integer'
+        ],[
+            'ids.required' => 'ID не получены',
+            'ids.array' => 'ID должны быть массивом',
+            'ids.max' => 'Доступно не более 10 ID',
+            'ids.*.required' => 'ID не получен',
+            'ids.*.integer' => 'ID должен быть числом'
+        ]);
+
+        if($validate->fails()){
+            return [
+                'action' => 'error',
+                'data' => $validate->errors()->first()
+            ];
+        }  
+
+        $postsToSend = [];
+
+        $data = $request->all();
+
+        $query = Posts::whereIn('id', $data['ids']);
+
+        foreach ($data['ids'] as $id) { 
+            $query->orderByRaw("id = {$id} desc");
+        }
+
+        $query->each(function($post) use(&$postsToSend){
+
+            if($post === null){
+                return true;
+            }
+
+            $postsToSend[$post->id] = $post->title;
+
+        });
 
         return $postsToSend;
     }

@@ -1,0 +1,179 @@
+.sidecomments {
+	min-width: 300px;
+	height: calc(100vh - 60px);
+	margin-left: auto;
+	position: sticky;
+
+	overflow-x: all;
+	top: 60px;
+
+	scrollbar-width: none;
+
+	display: flex;
+	flex-direction: column;
+	overflow: auto;
+}
+
+.sidecomments h3 {
+	margin-left: 10px;
+
+	cursor: pointer;
+}
+
+.sidecomments h3::after {
+	content: '';
+	width: 20px;
+	height: 20px;
+
+	margin-left: 10px;
+
+	display: inline-flex;
+
+	background-image: url(/img/arrow-right.svg);
+	background-size: 70%;
+	background-position: 1px bottom;
+	background-repeat: no-repeat;
+}
+
+.sidecomments::-webkit-scrollbar {
+    display: none;
+}
+
+.sidecomments .comment {
+	margin-bottom: 10px;
+
+	padding-left: 10px;
+	padding-right: 10px;
+
+	box-sizing: border-box;
+
+	cursor: pointer;
+
+	display: flex;
+	flex-direction: column;
+}
+
+.sidecomments .comment:hover {
+	background-color: rgba(0, 0, 0, 0.03);
+}
+
+.sidecomments .comment .comment-post {
+	display: flex;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	flex-direction: column;
+}
+
+.sidecomments .comment .comment-post p {
+	margin: 0;
+	font-weight: 600;
+}
+
+.sidecomments .comment .comment-content {
+	display: flex;
+	flex-direction: column;
+}
+
+.sidecomments .comment .comment-content .meta {
+	min-height: 32px;
+	display: flex;
+	align-items: center;
+}
+
+.sidecomments .comment .comment-content .meta .icon {
+	width: 32px;
+	height: 32px;
+
+	background-color: black;
+	background-position: center;
+	background-size: cover;
+	background-repeat: no-repeat;
+
+	border-radius: 50%;
+}
+
+.sidecomments .comment .comment-content .meta .name-and-date {
+	height: 32px;
+	margin-left: 10px;
+	display: flex;
+	flex-direction: column;
+}
+
+.sidecomments .comment .comment-content .meta .name-and-date .name {
+	margin: 0;
+	font-weight: 500;
+	cursor: pointer;
+	text-decoration: none;
+	color: black;
+}
+
+.sidecomments .comment .comment-content .meta .name-and-date .name:hover {
+	color: #4683d9;
+}
+
+.sidecomments .comment .comment-content .meta .name-and-date .date {
+	margin: 0;
+    font-size: 12px;
+    color: gray;
+}
+
+.sidecomments .comment .comment-content .meta .name-and-date .date .author {
+	font-size: 12px;
+    margin: 0;
+    margin-left: 10px;
+    color: #4683d9;
+}
+
+.sidecomments .comment .comment-content .comment-text {
+	font-size: 17px;
+    white-space: pre-wrap;
+    font-weight: 400;
+}
+
+.sidecomments .comment .comment-content .comment-text p {
+	margin-top: 12px;
+    margin-bottom: 0px;
+}
+
+.sidecomments .comment .comment-content .bottom {
+	display: flex;
+    align-items: center;
+}
+
+.sidecomments .comment .comment-content .bottom .reply {
+	color: gray;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.sidecomments-open {
+	position: fixed;
+	top: 60px;
+	right: 0;
+	box-sizing: border-box;
+	padding-left: 10px;
+	padding-right: 10px;
+	cursor: pointer;
+}
+
+.sidecomments-open h3::before {
+	content: '';
+	width: 20px;
+	height: 20px;
+
+	margin-right: 10px;
+
+	display: inline-flex;
+
+	background-image: url(/img/arrow-left.svg);
+	background-size: 70%;
+	background-position: 1px bottom;
+	background-repeat: no-repeat;
+
+}
+
+@media only screen and (max-width: 1560px) {
+	.sidecomments, .sidecomments-open {
+		display: none;
+	}
+}
