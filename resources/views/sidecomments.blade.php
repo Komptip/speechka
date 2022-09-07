@@ -18,6 +18,9 @@
 				<div class="comment-text">
 					<p>@{{ sComments[comment]['content'] }}</p>
 				</div>
+				<div class="attachment" v-if="sComments[comment]['attachment']" >
+					<img :src="sComments[comment]['attachment']" />
+				</div>
 				<div class="bottom">
 					<p class="reply">Ответить</p>
 				</div>
