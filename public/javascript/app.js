@@ -70,7 +70,8 @@ var app = Vue.createApp(
 		},
 		beforeMount(){
 			let feedTypeElement = document.querySelector('meta[name="feed-type"]');
-			if(feedTypeElement !== undefined){
+			console.log(feedTypeElement);
+			if(feedTypeElement !== null){
 				this.feedType = feedTypeElement.getAttribute('content');
 			}
 			this.getUserData();
