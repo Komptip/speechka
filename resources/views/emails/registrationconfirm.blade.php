@@ -26,7 +26,7 @@
 								<br/>
 								Для окончания регистрации нажмите на кнопку ниже:
 							</p>
-							<a href="{{ url('registration-confirm/' + $token) }}">
+							<a href="{{ url('registration-confirm/' . $token) }}">
 								<button>Закончить регистрацию</button>
 							</a>
 						</div>
