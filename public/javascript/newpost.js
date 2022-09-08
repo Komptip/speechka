@@ -32,5 +32,10 @@ const editor = new EditorJS({
     }
   },
   defaultBlock: 'paragraph',
-  holder: 'editorjs'
+  holder: 'editorjs',
+  onReady: () => {
+    if(app.postForEdit){
+      insertDataToEditor();
+    }
+   }
 })

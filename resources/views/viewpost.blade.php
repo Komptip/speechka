@@ -31,6 +31,7 @@
 						</div>
 						<a v-if="posts[0]['active']" class="author" :href="'/u/' + posts[0]['author_id']">@{{ users[posts[0]['author_id']]['name'] }}</a>
 						<p v-if="posts[0]['active']" class="timestamp">@{{ formatTime(posts[0]['created_at']) }}</p>
+						<img class="edited" src="/img/edited.svg" v-if="posts[0]['edited']" title="Пост был отредактирован">
 						<template v-if="user.moderator">
 							<img v-if="posts[0]['active']" src="/img/ban.svg" class="ban" v-on:click="removePosts(posts[0]['id'])"/>
 							<img v-if="!posts[0]['active']" src="/img/unban.svg" class="ban" v-on:click="unremovePosts(posts[0]['id'])"/>
@@ -39,6 +40,7 @@
 							<img src="/img/more.svg" class="btn" v-on:click="posts[0].showMore = !posts[0].showMore">
 							<div v-if="posts[0].showMore" class="list">
 								<p v-on:click="hidePost(posts[0])">Скрыть</p>
+								<p v-if="posts[0].author_id === user.id" v-on:click="editPost(posts[0])">Редактировать</p>
 								<p v-if="posts[0].author_id === user.id && posts[0]['active'] == 1" v-on:click="deletePost(posts[0])">Удалить</p>
 								<p v-if="posts[0].author_id === user.id && posts[0]['active'] == 0" v-on:click="republishPost(posts[0])">Восстановить</p>
 							</div>
@@ -49,10 +51,12 @@
 						<template v-for="element in posts[0]['elements']">
 							<h1 class="title" v-if="element['type'] == 'header'" v-html="element['data']['text']"></h1>
 							<p class="text" v-if="element['type'] == 'paragraph'" v-html="element['data']['text']"></p>
-							<div :class="['image', element['data']['stretched'] == 1 ? 'stretched' : '']" v-if="element['type'] == 'image'">
-								<img :src="element['data']['file']">
+							<template v-if="element['type'] == 'image'">
+								<div :class="['image', element['data']['stretched'] == 1 ? 'stretched' : '']">
+									<img :src="element['data']['file']">
+								</div>
 								<p class="caption"><i>@{{ element['data']['caption'] }}</i></p>
-							</div>
+							</template>
 							<ul v-if="element['type'] == 'list' && element['data']['style'] == 'unordered'">
 								<li v-for="item in element['data']['list_items']" v-html="item"></li>
 							</ul>
@@ -68,6 +72,11 @@
 								<template v-else-if="parseURL(element['data']['url'])['type'] == 'twitter'">
 									<div class="twitter">
 										<blockquote class="twitter-tweet"><a :href="element['data']['url']"></a></blockquote>
+									</div>
+								</template>
+								<template v-else-if="parseURL(element['data']['url'])['type'] == 'telegram'">
+									<div class="telegram">
+										<component :is="'script'" async src="https://telegram.org/js/telegram-widget.js?19" :data-telegram-post="parseURL(element['data']['url'])['url']" data-width="100%"></component>
 									</div>
 								</template>
 								<template v-else>

@@ -61,6 +61,8 @@
 	display: flex;
 	padding-top: 10px;
 	padding-bottom: 10px;
+    max-width: 280px;
+    word-wrap: break-word;
 	flex-direction: column;
 }
 

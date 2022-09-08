@@ -17,7 +17,9 @@
 				<img src="/img/more.svg" class="btn" v-on:click="post.showMore = !post.showMore">
 				<div v-if="post.showMore" class="list">
 					<p v-on:click="hidePost(post)">Скрыть</p>
-					<p v-if="post.author_id === user.id" v-on:click="deletePost(post)">Удалить</p>
+					<p v-if="post.author_id === user.id" v-on:click="editPost(post)">Редактировать</p>
+					<p v-if="post.author_id === user.id && post['active'] == 1" v-on:click="deletePost(post)">Удалить</p>
+					<p v-if="post.author_id === user.id && post['active'] == 0" v-on:click="republishPost(post)">Восстановить</p>
 				</div>
 			</div>
 		</div>
@@ -26,10 +28,12 @@
 			<template v-for="element in post['elements']">
 				<h2 class="sub-title" v-if="element['type'] == 'header'" v-html="element['data']['text']"></h2>
 				<p class="text" v-if="element['type'] == 'paragraph'" v-html="element['data']['text']"></p>
-				<div :class="['image', element['data']['stretched'] == 1 ? 'stretched' : '']" v-if="element['type'] == 'image'" >
-					<img :src="element['data']['file']">
+				<template v-if="element['type'] == 'image'">
+					<div :class="['image', element['data']['stretched'] == 1 ? 'stretched' : '']">
+						<img :src="element['data']['file']">
+					</div>
 					<p class="caption"><i>@{{ element['data']['caption'] }}</i></p>
-				</div>
+				</template>
 				<ul v-if="element['type'] == 'list' && element['data']['style'] == 'unordered'">
 					<li v-for="item in element['data']['list_items']" v-html="item"></li>
 				</ul>
@@ -45,6 +49,11 @@
 					<template v-else-if="parseURL(element['data']['url'])['type'] == 'twitter'">
 						<div class="twitter">
 							<blockquote class="twitter-tweet"><a :href="element['data']['url']"></a></blockquote>
+						</div>
+					</template>
+					<template v-else-if="parseURL(element['data']['url'])['type'] == 'telegram'">
+						<div class="telegram">
+							<component :is="'script'" async src="https://telegram.org/js/telegram-widget.js?19" :data-telegram-post="parseURL(element['data']['url'])['url']" data-width="100%"></component>
 						</div>
 					</template>
 					<template v-else>

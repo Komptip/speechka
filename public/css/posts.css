@@ -109,6 +109,12 @@
 	font-weight: 400;
 }
 
+.posts .meta .edited {
+	width: 20px;
+	margin-left: 20px;
+	cursor: pointer;
+}
+
 .posts .post .title {
 	font-size: 30px;
 
@@ -133,14 +139,15 @@
 	margin-left: 20px;
 	margin-right: 20px;
 	display: flex;
+	margin-bottom: 5px;
 	flex-direction: column;
 }
 
-.posts .post .image .caption {
+.posts .post .caption {
 	font-size: 14px;
 	margin-right: auto;
-	margin-left: 10px;
-	margin-bottom: 0px;
+	margin-left: 30px;
+	margin-bottom: 15px;
 }
 
 .posts .post .text {
@@ -158,6 +165,11 @@
 .posts .post .post-content .twitter {
 	display: flex;
 	justify-content: center;
+}
+
+.posts .post .post-content .telegram {
+	margin-top: 10px;
+	margin-bottom: 10px;
 }
 
 .posts .post .data {
@@ -219,9 +231,6 @@
 .posts .post .post-content .image {
 	margin-top: 10px;
 	margin-bottom: 10px;
-
-	padding-top: 10px;
-	padding-bottom: 10px;
 
 	display: flex;
 	justify-content: center;
@@ -285,7 +294,7 @@
 
 .posts .rating-list {
 	width: 200px;
-	height: 70px;
+	height: 210px;
 
 	overflow: auto;
 
@@ -399,6 +408,32 @@
 	outline: none;
 }
 
+.posts .large .new-post-return {
+	width: 200px;
+	height: 47px;
+
+	cursor: pointer;
+
+	font-size: 14px;
+
+	background-color: #574b90;
+
+	color: white;
+
+	border-radius: 7px;
+
+	border: 0;
+
+	margin-top: 30px;
+	margin-right: auto;
+
+	margin-left: 50px;
+
+	font-weight: 500;
+
+	outline: none;
+}
+
 .posts .large .new-post:hover {
 	background-color: #437CCE;
 }
@@ -406,6 +441,8 @@
 .posts .large .link {
 	width: 100%;
 	background: #fff;
+	margin-top: 5px;
+	background-blend-mode: 5px;
   border: 1px solid rgba(0,0,0,.13);
   border-top-color: rgba(0,0,0,.29);
   font-size: 15px;

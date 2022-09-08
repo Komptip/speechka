@@ -25,6 +25,7 @@ Route::get('/popular', function () {
 });
 
 Route::get('/post/new', 'App\Http\Controllers\PostController@new');
+Route::get('/post/edit/{id}', 'App\Http\Controllers\PostController@edit');
 
 Route::get('/p/{id}', 'App\Http\Controllers\PostController@view');
 
@@ -42,6 +43,8 @@ Route::post('/data/auth/new-password-set', 'App\Http\Controllers\AuthController@
 
 Route::post('/data/post/create', 'App\Http\Controllers\PostController@create');
 Route::post('/data/post/get', 'App\Http\Controllers\PostController@getPost');
+Route::post('/data/post/get-for-edit', 'App\Http\Controllers\PostController@getPostForEdit');
+Route::post('/data/post/edit', 'App\Http\Controllers\PostController@save');
 
 Route::post('/data/post/get-titles-by-ids', 'App\Http\Controllers\PostController@getTitle');
 
