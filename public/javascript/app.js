@@ -27,6 +27,7 @@ var app = Vue.createApp(
 				sideComments: false,
 				sideCommentsPostsTitles: false,
 				postForEdit: false,
+				feedType: false,
 				commentsreplies: {
 					'start': {
 						'attachment': false,
@@ -67,7 +68,11 @@ var app = Vue.createApp(
 				immediate: true
 			}
 		},
-		beforeMount(){	
+		beforeMount(){
+			let feedTypeElement = document.querySelector('meta[name="feed-type"]');
+			if(feedTypeElement !== undefined){
+				this.feedType = feedTypeElement.getAttribute('content');
+			}
 			this.getUserData();
 
 			let beforeMountFunctions = ['beforeMountProfile', 'beforeMountFeed', 'beforeMountViewpost', 'beforeMountSidecomments'];
