@@ -26,6 +26,7 @@ var app = Vue.createApp(
 				sideCommentsHidden: false,
 				sideComments: false,
 				sideCommentsPostsTitles: false,
+				postForEdit: false,
 				commentsreplies: {
 					'start': {
 						'attachment': false,
@@ -102,6 +103,7 @@ var app = Vue.createApp(
 					url = 'https://' + url;
 				}
 				let link = new URL(url);
+
 				if(link.hostname === 'www.youtube.com' || link.hostname === 'youtube.com' || link.hostname === 'youtu.be' || link.hostname === 'www.youtu.be'){
 					let regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
 				    let match = url.match(regExp);
@@ -111,6 +113,11 @@ var app = Vue.createApp(
 				    } else {
 				        return false;
 				    }
+				}
+
+				else if (link.hostname === 't.me' || link.hostname === 'www.t.me'){
+					let linkParts = url.split('/');
+					return {'type': 'telegram', 'url': linkParts.at(-2) + '/' + linkParts.at(-1)};
 				}
 
 				else if(link.hostname === 'www.twitter.com' || link.hostname === 'twitter.com'){
@@ -181,8 +188,13 @@ var app = Vue.createApp(
 					return response.json();
 				})
 				.then((data) => {
+					post.active = 0;
 					app.handleResponse(data);
 				});
+			},
+			editPost: function(post){
+				post.showMore = false;
+				window.location.href = '/post/edit/' + post.id;
 			},
 			republishPost: function(post){
 				post.showMore = false;
@@ -203,6 +215,7 @@ var app = Vue.createApp(
 					return response.json();
 				})
 				.then((data) => {
+					post.active = 1;
 					app.handleResponse(data);
 				});
 			},
@@ -445,6 +458,46 @@ var app = Vue.createApp(
 					fetch('/data/post/create', {
 						method: 'POST',
 						body: JSON.stringify({'data': outputData.blocks, 'title': event.target.closest('.large').querySelector('h1').innerText}),
+						headers: {'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')}
+					})
+					.then((response) => {
+						app.postSended = false;
+						app.catchResponse(response);
+						return response.json();
+					})
+					.then((data) => {
+						app.handleResponse(data);
+					});
+				});
+			},
+			savePost: function(event){
+				app.postSended = true;
+				editor.save().then((outputData) => {
+					if(event.target.closest('.large').querySelector('h1').innerText.length < 1){
+						if(outputData.blocks.length < 1){
+							app.postSended = false;
+							return app.throwMessage('Пост не может быть пустым', 'error');
+						} else {
+							if(outputData.blocks.length == 1){
+								if(outputData.blocks[0].type == 'paragraph'){
+									let convertTextarea = document.createElement("textarea");
+								    convertTextarea.innerHTML = outputData.blocks[0].data.text;
+								    let convertedText =  convertTextarea.value;
+								    convertTextarea.remove();
+									if(convertedText.replaceAll(/\s/g,'').length < 1){
+										app.postSended = false;
+										return app.throwMessage('Пост не может быть пустым', 'error');		
+									}
+								}
+							}
+						}
+					}
+					if(event.target.closest('.large').querySelector('h1').innerText.length > 120){
+						return app.throwMessage('Заголвок не может привышать 120 символов', 'error');
+					}
+					fetch('/data/post/edit', {
+						method: 'POST',
+						body: JSON.stringify({'data': outputData.blocks, 'title': event.target.closest('.large').querySelector('h1').innerText, 'id': document.querySelector('meta[name="post-id"]').getAttribute('content')}),
 						headers: {'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')}
 					})
 					.then((response) => {

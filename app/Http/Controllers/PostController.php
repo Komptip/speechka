@@ -30,6 +30,32 @@ class PostController extends Controller
         return view('newpost');
     }
 
+    public function edit(Request $request, $id){
+        $user = AuthController::isUserAuth($request);
+        if($user === false){
+            return [
+                'action' => 'error',
+                'data' => 'Действие запрещенно'
+            ];
+        }
+
+        $post = Posts::where(['id' => $id])->first();
+
+        if($post === null){
+            abort(404);
+        }
+
+        if($user->id !== $post->user_id){
+            return [
+                'action' => 'error',
+                'data' => 'Это не ваш пост'
+            ];
+        }
+
+
+        return view('editpost')->with('post', $post);
+    }
+
     public function view(Request $request, $id){
         $post = Posts::where(['id' => $id])->first();
         if($post === null){
@@ -49,7 +75,7 @@ class PostController extends Controller
         }
 
         $validate = Validator::make($request->json()->all(), [
-            'title' => 'present|string|min:0|max:120'
+            'title' => 'present|string|min:0|max:120',
         ],[
             'title.string' => 'Заголовок должен быть строкой',
             'title.min' => 'Заголовок слишком короткий',
@@ -65,6 +91,149 @@ class PostController extends Controller
 
         $data = $request->json()->all();
 
+        $validateResult = self::validatePostData($data);
+
+        if($validateResult !== true){
+            return $validateResult;
+        }
+
+        $newPost = new Posts();
+        $newPost->user_id = $user->id;
+        $newPost->created_at = time();
+        $newPost->title = $data['title'];
+        $newPost->active = 1;
+        $newPost->save();
+
+        foreach($request->json()->all()['data'] as $element){
+            $newElement = new PostElements();
+            $newElement->post_id = $newPost->id;
+            $newElement->type = $element['type'];
+            $newElement->save();
+
+            foreach ($element['data'] as $key => $value) {
+                if($key == 'file'){
+                    $newData = new ElementData();
+                    $newData->element_id = $newElement->id;
+                    $newData->key = $key;
+                    $newData->value = is_array($value) ? $value['url'] : '';
+                    $newData->save();
+                } else
+                if($key == 'items'){
+                    foreach ($value as $item) {
+                        $newData = new ElementData();
+                        $newData->element_id = $newElement->id;
+                        $newData->key = 'list_item';
+                        $newData->value = $item;
+                        $newData->save();
+                    }
+                } else {
+                    $newData = new ElementData();
+                    $newData->element_id = $newElement->id;
+                    $newData->key = $key;
+                    $newData->value = $value;
+                    $newData->save();
+                }
+            }
+        }
+
+        $response = new Response(json_encode(['action' => 'redirect', 'data' => '/p/' . $newPost->id]));
+
+        return $response;
+    }
+
+    public function save(Request $request){
+        $user = AuthController::isUserAuth($request);
+        if($user === false){
+            return [
+                'action' => 'error',
+                'data' => 'Действие запрещенно'
+            ];
+        }
+
+        $validate = Validator::make($request->json()->all(), [
+            'title' => 'present|string|min:0|max:120',
+            'id' => 'required|integer|min:1',
+        ],[
+            'title.string' => 'Заголовок должен быть строкой',
+            'title.min' => 'Заголовок слишком короткий',
+            'title-max' => 'Заголовок слишком длинный',
+            'id.required' => 'ID не получен',
+            'id.integer' => 'ID должен быть числом',
+            'id.min' => 'ID некорректен'
+        ]);
+
+        if($validate->fails()){
+            return [
+                'action' => 'error',
+                'data' => $validate->errors()->first()
+            ];
+        } 
+
+        $data = $request->json()->all();
+
+        $post = Posts::where(['id' => $data['id']])->first();
+
+        $post->title = $data['title'];
+        $post->edited = true;
+        $post->save();
+
+        if($post === null){
+            return [
+                'action' => 'error',
+                'data' => 'Пост не найден'
+            ];
+        }
+
+        
+        $validateResult = self::validatePostData($data);
+
+        if($validateResult !== true){
+            return $validateResult;
+        }
+
+        PostElements::where(['post_id' => $post->id])->each(function($oldElement){
+            ElementData::where(['element_id' => $oldElement->id])->delete();
+            $oldElement->delete();
+        });
+
+        foreach($request->json()->all()['data'] as $element){
+            $newElement = new PostElements();
+            $newElement->post_id = $post->id;
+            $newElement->type = $element['type'];
+            $newElement->save();
+
+            foreach ($element['data'] as $key => $value) {
+                if($key == 'file'){
+                    $newData = new ElementData();
+                    $newData->element_id = $newElement->id;
+                    $newData->key = $key;
+                    $newData->value = is_array($value) ? $value['url'] : '';
+                    $newData->save();
+                } else
+                if($key == 'items'){
+                    foreach ($value as $item) {
+                        $newData = new ElementData();
+                        $newData->element_id = $newElement->id;
+                        $newData->key = 'list_item';
+                        $newData->value = $item;
+                        $newData->save();
+                    }
+                } else {
+                    $newData = new ElementData();
+                    $newData->element_id = $newElement->id;
+                    $newData->key = $key;
+                    $newData->value = $value;
+                    $newData->save();
+                }
+            }
+        }
+
+        $response = new Response(json_encode(['action' => 'success', 'data' => 'Пост сохранен']));
+
+        return $response;
+    }
+
+    public function validatePostData($data){
         $allowedPostTags = [
             'image' => [
                 'caption',
@@ -128,7 +297,7 @@ class PostController extends Controller
             ];
         }
 
-        foreach($request->json()->all()['data'] as $element){
+        foreach($data['data'] as $element){
             if(!isset($element['type'])){
                 return [
                     'action' => 'error',
@@ -295,48 +464,7 @@ class PostController extends Controller
             }
         }
 
-        $newPost = new Posts();
-        $newPost->user_id = $user->id;
-        $newPost->created_at = time();
-        $newPost->title = $data['title'];
-        $newPost->active = 1;
-        $newPost->save();
-
-        foreach($request->json()->all()['data'] as $element){
-            $newElement = new PostElements();
-            $newElement->post_id = $newPost->id;
-            $newElement->type = $element['type'];
-            $newElement->save();
-
-            foreach ($element['data'] as $key => $value) {
-                if($key == 'file'){
-                    $newData = new ElementData();
-                    $newData->element_id = $newElement->id;
-                    $newData->key = $key;
-                    $newData->value = is_array($value) ? $value['url'] : '';
-                    $newData->save();
-                } else
-                if($key == 'items'){
-                    foreach ($value as $item) {
-                        $newData = new ElementData();
-                        $newData->element_id = $newElement->id;
-                        $newData->key = 'list_item';
-                        $newData->value = $item;
-                        $newData->save();
-                    }
-                } else {
-                    $newData = new ElementData();
-                    $newData->element_id = $newElement->id;
-                    $newData->key = $key;
-                    $newData->value = $value;
-                    $newData->save();
-                }
-            }
-        }
-
-        $response = new Response(json_encode(['action' => 'redirect', 'data' => '/p/' . $newPost->id]));
-
-        return $response;
+        return true;
     }
 
     public function delete(Request $request){
@@ -533,11 +661,90 @@ class PostController extends Controller
 
             $postToSend['active'] = $post->active;
 
+            $postToSend['edited'] = $post->edited;
+
             array_push($postsToSend, $postToSend);
 
         });
 
         return $postsToSend;
+    }
+
+    public function getPostForEdit(Request $request){
+        $user = AuthController::isUserAuth($request);
+
+        if($user == false){
+            return [
+                'action' => 'error',
+                'data' => 'Действие запрещенно'
+            ];
+        }
+
+        $validate = Validator::make($request->all(), [
+            'id' => 'required|integer|min:1'
+        ],[
+            'id.required' => 'ID не получен',
+            'id.integer' => 'ID должен быть числом',
+            'id.min' => 'ID Некорректен'
+        ]);
+
+        if($validate->fails()){
+            return [
+                'action' => 'error',
+                'data' => $validate->errors()->first()
+            ];
+        } 
+
+        $data = $request->all();
+
+        $post = Posts::where(['id' => $request['id']])->first();
+
+        if($post === null){
+            return [
+                'action' => 'error',
+                'data' => 'Пост не найден'
+            ];
+        } 
+
+        if($post->user_id !== $user->id){
+            return [
+                'action' => 'error',
+                'data' => 'Это не ваш пост'
+            ];
+        }
+
+        $postToSend = [];
+        $elements = [];
+        $postToSend['title'] = $post->title;
+
+        foreach (PostElements::where(['post_id' => $post->id])->get() as $element) {
+             $elementToSend = [
+                'type' => $element->type
+            ];
+            $data = [];
+            ElementData::where(['element_id' => $element->id])->each(function($edata) use(&$data){
+                $data[$edata->key] = $edata->value;
+            });
+
+            if($element->type == 'list'){
+                unset($data['list_item']);
+                $data['items'] = ElementData::where(['element_id' => $element->id, 'key' => 'list_item'])->pluck('value')->toArray();
+            }
+
+            if($element->type == 'image'){
+                $data['file'] = [
+                    'url' => $data['file']
+                ];
+            }
+
+            $elementToSend['data'] = $data;
+
+            array_push($elements, $elementToSend);
+        }
+
+        $postToSend['data'] = $elements;
+
+        return $postToSend;
     }
 
     public function getPostsByUser(Request $request){

@@ -6,10 +6,15 @@ class link {
     };
   }
 
+  constructor({data}){
+    this.data = data;
+  }
+
   render() {
     let element = document.createElement('input');
     element.classList.add('link');
-    element.setAttribute('placeholder', 'Ссылка на видео Youtube, пост в Twitter')
+    element.setAttribute('placeholder', 'Ссылка на видео в Ютубе, на пост в Твиттере, Телеграме')
+    element.value = this.data && this.data.url ? this.data.url : '';
     return element;
   }
 
