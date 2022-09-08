@@ -114,6 +114,7 @@
 	max-width: 20px;
 	margin-left: 20px;
 	cursor: pointer;
+	display: none;
 }
 
 .posts .post .title {
@@ -599,7 +600,7 @@
 	.posts .meta .edited {
 		width: 50px;
 		max-width: 50px;
-		margin-left: 20px;
+		margin-left:	 20px;
 		cursor: pointer;
 	}
 }
