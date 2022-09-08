@@ -111,6 +111,7 @@
 
 .posts .meta .edited {
 	width: 20px;
+	max-width: 20px;
 	margin-left: 20px;
 	cursor: pointer;
 }
@@ -593,5 +594,12 @@
 		padding-top: 20px;
 		padding-left: 30px;
 		padding-bottom: 20px;
+	}
+
+	.posts .meta .edited {
+		width: 50px;
+		max-width: 50px;
+		margin-left: 20px;
+		cursor: pointer;
 	}
 }
