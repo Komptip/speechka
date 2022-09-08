@@ -228,7 +228,7 @@ class CommentController extends Controller
 
     function newest(Request $request){
 
-        return Comments::where(['active' => 1])->latest()->take(10)->get()->pluck('id')->toArray();
+        return Comments::where(['active' => 1])->latest()->take(10)->get()->sortByDesc('id')->pluck('id')->toArray();
     }
 
     function getComment(Request $request){
