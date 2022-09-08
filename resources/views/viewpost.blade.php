@@ -30,8 +30,7 @@
 							
 						</div>
 						<a v-if="posts[0]['active']" class="author" :href="'/u/' + posts[0]['author_id']">@{{ users[posts[0]['author_id']]['name'] }}</a>
-						<p v-if="posts[0]['active']" class="timestamp">@{{ formatTime(posts[0]['created_at']) }}</p>
-						<img class="edited" src="/img/edited.svg" v-if="posts[0]['edited']" title="Пост был отредактирован">
+						<p v-if="posts[0]['active']" class="timestamp">@{{ formatTime(posts[0]['created_at']) }}</p><!--  -->
 						<template v-if="user.moderator">
 							<img v-if="posts[0]['active']" src="/img/ban.svg" class="ban" v-on:click="removePosts(posts[0]['id'])"/>
 							<img v-if="!posts[0]['active']" src="/img/unban.svg" class="ban" v-on:click="unremovePosts(posts[0]['id'])"/>
