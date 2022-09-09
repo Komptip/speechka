@@ -253,7 +253,7 @@ class PostController extends Controller
                 'items',
                 'style'
             ],
-            'link' => [
+            'integration' => [
                 'url'
             ]
         ]; 

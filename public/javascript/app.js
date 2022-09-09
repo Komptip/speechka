@@ -70,7 +70,7 @@ var app = Vue.createApp(
 		},
 		beforeMount(){
 			let feedTypeElement = document.querySelector('meta[name="feed-type"]');
-			console.log(feedTypeElement);
+
 			if(feedTypeElement !== null){
 				this.feedType = feedTypeElement.getAttribute('content');
 			}
@@ -996,7 +996,8 @@ var app = Vue.createApp(
 				if(reply !== undefined){
 					formData.append('reply-id', reply);
 				}
-				
+
+
 				fetch('/data/comment/create', {
 					method: 'POST',
 					body: formData,
@@ -1018,7 +1019,12 @@ var app = Vue.createApp(
 					loadComments();
 				});
 			},
+			escapeLinksFromText: function(text){
 
+				let Rexp = /((http|https|ftp):\/\/[\w?=&.\/-;#~%-]+(?![\w\s?&.\/;#~%"=-]*>))/g;
+             
+           		 return text.replace(Rexp, "<a href='$1' target='_blank'>$1</a>");
+			},
 			getUsersByID: async function(usersIds){
 				let formData = new FormData();
 				usersIds.forEach(function(id){

@@ -7,7 +7,7 @@
 		<script src="/javascript/editor.js"></script>
 		<script src="/javascript/editor/header.js"></script>
 		<script src="/javascript/editor/list.js"></script>
-		<script src="/javascript/editor/link.js"></script>
+		<script src="/javascript/editor/integration.js"></script>
 		<script src="/javascript/editor/simple-image.js"></script>
 
 

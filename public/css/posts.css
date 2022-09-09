@@ -164,6 +164,10 @@
 	margin-bottom: 10px;
 }
 
+.posts .post .text a {
+	text-decoration: none;
+}
+
 .posts .post .post-content .twitter {
 	display: flex;
 	justify-content: center;

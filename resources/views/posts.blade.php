@@ -40,7 +40,7 @@
 				<ol v-if="element['type'] == 'list' && element['data']['style'] == 'ordered'">
 					<li v-for="item in element['data']['list_items']" v-html="item"></li>
 				</ol>
-				<template v-if="element['type'] == 'link'">
+				<template v-if="element['type'] == 'integration'">
 					<template v-if="parseURL(element['data']['url'])['type'] == 'youtube'">
 						<div class="ytb-video">
 							<iframe :src="'https://www.youtube.com/embed/' + parseURL(element['data']['url'])['key']" allowfullscreen></iframe>
