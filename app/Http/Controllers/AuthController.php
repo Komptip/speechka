@@ -63,7 +63,6 @@ class AuthController extends Controller
         $newUser = new Users();
         $newUser->username = $data['name'];
         $newUser->email = $data['email'];
-        $newUser->authtoken = Str::random(250);
         $newUser->password = password_hash($data['password'], PASSWORD_DEFAULT);
         $newUser->moderator = 0;
         $newUser->confirmed = 0;
