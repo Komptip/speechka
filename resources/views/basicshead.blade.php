@@ -16,3 +16,9 @@
 <script async src="https://platform.twitter.com/widgets.js" async charset="utf-8"></script>
 <link rel="stylesheet" type="text/css" href="/css/window.css">
 <script src="/javascript/sidecomments.js?key={{ uniqid() }}"></script>
+
+<meta property="og:title" content="Спичка">
+<meta property="og:site_name" content="Speech-ka">
+<meta property="og:url" content="{{ url('') }}">
+<meta property="og:description" content="Место для свободного общения">
+<meta property="og:image" content="/img/favicon.svg">
