@@ -123,7 +123,7 @@ var app = Vue.createApp(
 
 				else if (link.hostname === 't.me' || link.hostname === 'www.t.me'){
 					let linkParts = url.split('/');
-					return {'type': 'telegram', 'url': linkParts.at(-2) + '/' + linkParts.at(-1)};
+					return {'type': 'telegram', 'url': linkParts.at(-2) + '/' + linkParts.at(-1).split('?')[0]};
 				}
 
 				else if(link.hostname === 'www.twitter.com' || link.hostname === 'twitter.com'){
