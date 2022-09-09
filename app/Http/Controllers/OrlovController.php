@@ -10,7 +10,7 @@ class OrlovController extends Controller
 
     public static $singleTriggerWords = ['нейроорлов', 'орлов', 'дмитрий орлов', 'tj', 'тж', 'извинись'];
 
-    public static $fullMessageTriggerWords = ['жаль', 'жал', 'jal'];
+    public static $fullMessageTriggerWords = ['жаль', 'жал', 'jal', 'жаль.', 'жаль..', 'жаль...'];
 
     public static $responses = [
         'Что здесь написано???',
