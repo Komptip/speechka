@@ -2,13 +2,13 @@
 <html>
 	<head>
 		@include('basicshead')
-		<link rel="stylesheet" type="text/css" href="/css/posts.css">
-		<link rel="stylesheet" type="text/css" href="/css/post.css">
+		<link rel="stylesheet" type="text/css" href="/css/posts.css?key={{ uniqid() }}">
+		<link rel="stylesheet" type="text/css" href="/css/post.css?key={{ uniqid() }}">
 		<script src="/javascript/editor.js"></script>
-		<script src="/javascript/editor/header.js"></script>
-		<script src="/javascript/editor/list.js"></script>
-		<script src="/javascript/editor/integration.js"></script>
-		<script src="/javascript/editor/simple-image.js"></script>
+		<script src="/javascript/editor/header.js?key={{ uniqid() }}"></script>
+		<script src="/javascript/editor/list.js"?key={{ uniqid() }}></script>
+		<script src="/javascript/editor/integration.js"?key={{ uniqid() }}></script>
+		<script src="/javascript/editor/simple-image.js?key={{ uniqid() }}"></script>
 
 
 	</head>

@@ -5,14 +5,14 @@
 <html>
 	<head>
 		@include('basicshead')
-		<link rel="stylesheet" type="text/css" href="/css/posts.css">
-		<link rel="stylesheet" type="text/css" href="/css/profile.css">
-		<link rel="stylesheet" type="text/css" href="/css/comments.css">
+		<link rel="stylesheet" type="text/css" href="/css/posts.css?key={{ uniqid() }}">
+		<link rel="stylesheet" type="text/css" href="/css/profile.css?key={{ uniqid() }}">
+		<link rel="stylesheet" type="text/css" href="/css/comments.css?key={{ uniqid() }}">
 
 		<meta name="user_id" content="{{ $user->id }}">
 		<meta name="type" content="{{ $type }}">
 
-		<script src="/javascript/profile.js"></script>
+		<script src="/javascript/profile.js?key={{ uniqid() }}"></script>
 	</head>
 	<body id=app v-cloak>
 

@@ -4,11 +4,11 @@
 		@include('basicshead')
 		<link rel="stylesheet" type="text/css" href="/css/posts.css">
 		<link rel="stylesheet" type="text/css" href="/css/post.css">
-		<script src="/javascript/editor.js"></script>
-		<script src="/javascript/editor/header.js"></script>
-		<script src="/javascript/editor/list.js"></script>
-		<script src="/javascript/editor/integration.js"></script>
-		<script src="/javascript/editor/simple-image.js"></script>
+		<script src="/javascript/editor.js?key={{ uniqid() }}"></script>
+		<script src="/javascript/editor/header.js?key={{ uniqid() }}"></script>
+		<script src="/javascript/editor/list.js?key={{ uniqid() }}"></script>
+		<script src="/javascript/editor/integration.?key={{ uniqid() }}js"></script>
+		<script src="/javascript/editor/simple-image.js?key={{ uniqid() }}"></script>
 
 		<meta name="post-id" content="{{ $post->id }}">
 	</head>

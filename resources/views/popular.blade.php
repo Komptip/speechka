@@ -2,11 +2,11 @@
 <html>
 	<head>
 		@include('basicshead')
-		<link rel="stylesheet" type="text/css" href="/css/posts.css">
+		<link rel="stylesheet" type="text/css" href="/css/posts.css?key={{ uniqid() }}">
 
 		<meta name="feed-type" content="popular">
 
-		<script src="/javascript/feed.js"></script>
+		<script src="/javascript/feed.js?key={{ uniqid() }}"></script>
 	</head>
 	<body id=app v-cloak>
 

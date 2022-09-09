@@ -8,8 +8,8 @@
 		<meta name="post-id" content="{{ $post->id }}">
 		<meta name="feed-type" content="popular">
 
-		<script src="/javascript/viewpost.js"></script>
-		<script src="/javascript/feed.js"></script>
+		<script src="/javascript/viewpost.js?key={{ uniqid() }}"></script>
+		<script src="/javascript/feed.js?key={{ uniqid() }}"></script>
 	</head>
 	<body id=app v-cloak>
 
