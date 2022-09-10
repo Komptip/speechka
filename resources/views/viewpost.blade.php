@@ -8,8 +8,8 @@
 		<meta name="post-id" content="{{ $post->id }}">
 		<meta name="feed-type" content="popular">
 
-		<script src="/javascript/viewpost.js"></script>
-		<script src="/javascript/feed.js"></script>
+		<script src="/javascript/viewpost.js?key={{ uniqid() }}"></script>
+		<script src="/javascript/feed.js?key={{ uniqid() }}"></script>
 	</head>
 	<body id=app v-cloak>
 
@@ -30,8 +30,7 @@
 							
 						</div>
 						<a v-if="posts[0]['active']" class="author" :href="'/u/' + posts[0]['author_id']">@{{ users[posts[0]['author_id']]['name'] }}</a>
-						<p v-if="posts[0]['active']" class="timestamp">@{{ formatTime(posts[0]['created_at']) }}</p>
-						<img class="edited" src="/img/edited.svg" v-if="posts[0]['edited']" title="Пост был отредактирован">
+						<p v-if="posts[0]['active']" class="timestamp">@{{ formatTime(posts[0]['created_at']) }}</p><!--  -->
 						<template v-if="user.moderator">
 							<img v-if="posts[0]['active']" src="/img/ban.svg" class="ban" v-on:click="removePosts(posts[0]['id'])"/>
 							<img v-if="!posts[0]['active']" src="/img/unban.svg" class="ban" v-on:click="unremovePosts(posts[0]['id'])"/>
@@ -63,7 +62,7 @@
 							<ol v-if="element['type'] == 'list' && element['data']['style'] == 'ordered'">
 								<li v-for="item in element['data']['list_items']" v-html="item"></li>
 							</ol>
-							<template v-if="element['type'] == 'link'">
+							<template v-if="element['type'] == 'integration'">
 								<template v-if="parseURL(element['data']['url'])['type'] == 'youtube'">
 									<div class="ytb-video">
 										<iframe :src="'https://www.youtube.com/embed/' + parseURL(element['data']['url'])['key']" allowfullscreen></iframe>

@@ -16,6 +16,7 @@ use App\Models\Users;
 use App\Models\Bans;
 use App\Models\PasswordResets;
 use App\Models\RegistrationConfirmations;
+use App\Models\UserAuthTokens;
 
 use App\Mail\PasswordResetMail;
 use App\Mail\RegistrationConfirmMail;
@@ -62,7 +63,6 @@ class AuthController extends Controller
         $newUser = new Users();
         $newUser->username = $data['name'];
         $newUser->email = $data['email'];
-        $newUser->authtoken = Str::random(250);
         $newUser->password = password_hash($data['password'], PASSWORD_DEFAULT);
         $newUser->moderator = 0;
         $newUser->confirmed = 0;
@@ -132,8 +132,10 @@ class AuthController extends Controller
 
         $authToken = Str::random(250);
 
-        $user->authtoken = $authToken;
-        $user->save();
+        $newAuthToken = new UserAuthTokens();
+        $newAuthToken->token = $authToken;
+        $newAuthToken->user_id = $user->id;
+        $newAuthToken->save();
 
         $response = new Response(json_encode(['action' => 'reload-user-data']));
         $response->withCookie(cookie('auth', $authToken, 60 * 24 * 365));
@@ -217,13 +219,13 @@ class AuthController extends Controller
             ];
         }
 
-        $user = Users::where(['authtoken' => $authToken])->first();
+        $auth = UserAuthTokens::where(['token' => $authToken])->first();
 
-        if($user === null){
-            return [
-                'user' => false
-            ];
+        if($auth == null){
+            return ['user' => false];
         }
+
+        $user = Users::where(['id' => $auth->user_id])->first();
 
         $banned = self::isUserBanned($user);
 
@@ -240,11 +242,10 @@ class AuthController extends Controller
     public function logOut(Request $request){
         $authToken = $request->cookie('auth');
         if($authToken !== null){
-            $user = Users::where(['authtoken' => $authToken])->first();
+            $auth = UserAuthTokens::where(['token' => $authToken])->first();
 
-            if($user !== null){
-                $user->authtoken = Str::random(250);
-                $user->save();
+            if($auth !== null){
+                $auth->delete();
             }
         }
 
@@ -260,11 +261,13 @@ class AuthController extends Controller
             return false;
         }
 
-        $user = Users::where(['authtoken' => $authToken, 'confirmed' => 1])->first();
+        $auth = UserAuthTokens::where(['token' => $authToken])->first();
 
-        if($user === null){
+        if($auth == null){
             return false;
         }
+
+        $user = Users::where(['id' => $auth->user_id])->first();
 
         if(self::isUserBanned($user)){
             return false;
@@ -323,9 +326,13 @@ class AuthController extends Controller
         $authToken = Str::random(250);
 
         $user = Users::where(['id' => $registrationConfirm->user_id])->first();
-        $user->authtoken = $authToken;
         $user->confirmed = 1;
         $user->save();
+
+        $newAuthToken = new UserAuthTokens();
+        $newAuthToken->token = $authToken;
+        $newAuthToken->user_id = $user->id;
+        $newAuthToken->save();
 
         RegistrationConfirmations::where(['id' => $registrationConfirm->id])->delete();
 
@@ -364,9 +371,13 @@ class AuthController extends Controller
 
         $authToken = Str::random(250);
 
-        $user->authtoken = $authToken;
         $user->password = password_hash($data['password'], PASSWORD_DEFAULT);
         $user->save();
+
+        $newAuthToken = new UserAuthTokens();
+        $newAuthToken->token = $authToken;
+        $newAuthToken->user_id = $user->id;
+        $newAuthToken->save();
 
         $response = new Response(json_encode(['action' => 'redirect', 'data' => '/']));
         $response->withCookie(cookie('auth', $authToken, 60 * 24 * 365));

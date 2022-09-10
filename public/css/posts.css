@@ -111,8 +111,10 @@
 
 .posts .meta .edited {
 	width: 20px;
+	max-width: 20px;
 	margin-left: 20px;
 	cursor: pointer;
+	display: none;
 }
 
 .posts .post .title {
@@ -160,6 +162,10 @@
 
 	margin-top: 10px;
 	margin-bottom: 10px;
+}
+
+.posts .post .text a {
+	text-decoration: none;
 }
 
 .posts .post .post-content .twitter {
@@ -294,7 +300,7 @@
 
 .posts .rating-list {
 	width: 200px;
-	height: 210px;
+	height: 100px;
 
 	overflow: auto;
 
@@ -304,7 +310,7 @@
 
 	border-radius: 15px;
 
-	margin-top: 90px;
+	margin-top: 120px;
 
 	background-color: white;
 	box-shadow: 0px -1px 24px -16px rgba(66, 68, 90, 1);
@@ -593,5 +599,12 @@
 		padding-top: 20px;
 		padding-left: 30px;
 		padding-bottom: 20px;
+	}
+
+	.posts .meta .edited {
+		width: 50px;
+		max-width: 50px;
+		margin-left:	 20px;
+		cursor: pointer;
 	}
 }

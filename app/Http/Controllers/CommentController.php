@@ -13,6 +13,8 @@ use App\Models\Files;
 use App\Models\Rating;
 use App\Models\CommentAttachments;
 
+use App\Http\Controllers\OrlovController;
+
 class CommentController extends Controller
 {
     function create(Request $request){
@@ -54,6 +56,8 @@ class CommentController extends Controller
             ];
         }
 
+        $orlovTriggered = OrlovController::detectTrigger($data['text']);
+
         if(isset($data['reply-id'])){
             $commentToReply = Comments::where(['id' => $data['reply-id'], 'post_id' => $post->id])->first();
 
@@ -62,6 +66,10 @@ class CommentController extends Controller
                     'action' => 'error',
                     'data' => 'Оригинальный комментарий не найден'
                 ];
+            }
+
+            if($commentToReply->user_id === OrlovController::$account_id){
+                $orlovTriggered = true;
             }
 
             if($this->getLevelOfReply($commentToReply) >= 8){
@@ -78,7 +86,7 @@ class CommentController extends Controller
             }
         } else {
             $validate = Validator::make($request->all(), [
-                'attachment' => 'present|image|mimes:jpeg,png,bmp,jpg,gif,webp,avif,svg|max:4096|min:1|dimensions:max_width=3840,max_height=2160,min_width=10,min_height=10|nullable',
+                'attachment' => 'present|image|mimes:jpeg,png,bmp,jpg,gif,webp,avif,svg|max:10240|min:1|dimensions:max_width=7680,max_height=4320,min_width=10,min_height=10|nullable',
             ],[
                 'attachment.image' => 'Приложение должно быть изображением',
                 'attachment.mines' => 'Запрещенный формат приложения',
@@ -106,6 +114,23 @@ class CommentController extends Controller
         }
 
         $newComment->save();
+
+        if($orlovTriggered){
+            $orlovResponse = new Comments();
+            $orlovResponse->content = OrlovController::getResponse();
+            $orlovResponse->post_id = $post->id;
+            $orlovResponse->user_id = OrlovController::$account_id;
+            $orlovResponse->created_at = time();
+            $orlovResponse->active = 1;
+
+            if($this->getLevelOfReply($newComment) >= 8){
+                $orlovResponse->reply_to = Comments::where(['id' => $newComment->reply_to])->first()->id;
+            } else {
+                $orlovResponse->reply_to = $newComment->id;
+            }
+
+            $orlovResponse->save();
+        }
 
         if($request->attachment != 'undefined'){
 
@@ -203,7 +228,7 @@ class CommentController extends Controller
 
     function newest(Request $request){
 
-        return Comments::where(['active' => 1])->latest()->take(10)->get()->pluck('id')->toArray();
+        return Comments::where(['active' => 1])->latest()->take(10)->get()->sortByDesc('id')->pluck('id')->toArray();
     }
 
     function getComment(Request $request){

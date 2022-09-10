@@ -2,8 +2,8 @@
 <html>
 	<head>
 		@include('basicshead')
-		<link rel="stylesheet" type="text/css" href="/css/newpassword.css">
-		<link rel="stylesheet" type="text/css" href="/css/window.css">
+		<link rel="stylesheet" type="text/css" href="/css/newpassword.css?key={{ uniqid() }}">
+		<link rel="stylesheet" type="text/css" href="/css/window.css?key={{ uniqid() }}">
 
 		<meta name="token" content="{{ $token }}">
 	</head>

@@ -1,4 +1,4 @@
-class link {
+class integration {
   static get toolbox() {
     return {
       title: 'Вставить',

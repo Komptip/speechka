@@ -27,6 +27,7 @@ var app = Vue.createApp(
 				sideComments: false,
 				sideCommentsPostsTitles: false,
 				postForEdit: false,
+				feedType: false,
 				commentsreplies: {
 					'start': {
 						'attachment': false,
@@ -67,7 +68,12 @@ var app = Vue.createApp(
 				immediate: true
 			}
 		},
-		beforeMount(){	
+		beforeMount(){
+			let feedTypeElement = document.querySelector('meta[name="feed-type"]');
+
+			if(feedTypeElement !== null){
+				this.feedType = feedTypeElement.getAttribute('content');
+			}
 			this.getUserData();
 
 			let beforeMountFunctions = ['beforeMountProfile', 'beforeMountFeed', 'beforeMountViewpost', 'beforeMountSidecomments'];
@@ -117,7 +123,7 @@ var app = Vue.createApp(
 
 				else if (link.hostname === 't.me' || link.hostname === 'www.t.me'){
 					let linkParts = url.split('/');
-					return {'type': 'telegram', 'url': linkParts.at(-2) + '/' + linkParts.at(-1)};
+					return {'type': 'telegram', 'url': linkParts.at(-2) + '/' + linkParts.at(-1).split('?')[0]};
 				}
 
 				else if(link.hostname === 'www.twitter.com' || link.hostname === 'twitter.com'){
@@ -990,7 +996,8 @@ var app = Vue.createApp(
 				if(reply !== undefined){
 					formData.append('reply-id', reply);
 				}
-				
+
+
 				fetch('/data/comment/create', {
 					method: 'POST',
 					body: formData,
@@ -1012,7 +1019,12 @@ var app = Vue.createApp(
 					loadComments();
 				});
 			},
+			escapeLinksFromText: function(text){
 
+				let Rexp = /((http|https|ftp):\/\/[\w?=&.\/-;#~%-]+(?![\w\s?&.\/;#~%"=-]*>))/g;
+             
+           		 return text.replace(Rexp, "<a href='$1' target='_blank'>$1</a>");
+			},
 			getUsersByID: async function(usersIds){
 				let formData = new FormData();
 				usersIds.forEach(function(id){
