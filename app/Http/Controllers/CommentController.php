@@ -86,7 +86,7 @@ class CommentController extends Controller
             }
         } else {
             $validate = Validator::make($request->all(), [
-                'attachment' => 'present|image|mimes:jpeg,png,bmp,jpg,gif,webp,avif,svg|max:4096|min:1|dimensions:max_width=3840,max_height=2160,min_width=10,min_height=10|nullable',
+                'attachment' => 'present|image|mimes:jpeg,png,bmp,jpg,gif,webp,avif,svg|max:10240|min:1|dimensions:max_width=7680,max_height=4320,min_width=10,min_height=10|nullable',
             ],[
                 'attachment.image' => 'Приложение должно быть изображением',
                 'attachment.mines' => 'Запрещенный формат приложения',

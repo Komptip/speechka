@@ -22,7 +22,7 @@ class FileController extends Controller
         }
 
         $validate = Validator::make($request->all(), [
-            'image' => 'required|image|mimes:jpeg,png,bmp,jpg,gif,webp,avif,svg|max:4096|min:1|dimensions:max_width=3840,max_height=2160,min_width=10,min_height=10',
+            'image' => 'required|image|mimes:jpeg,png,bmp,jpg,gif,webp,avif,svg|max:10240|min:1|dimensions:max_width=7680,max_height=4320,min_width=10,min_height=10',
         ],[
             'image.required' => 'Изображение не получено',
             'image.image' => 'Файл должен быть Изображением',
