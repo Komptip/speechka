@@ -82,3 +82,5 @@ Route::post('/data/post/get-by-user', 'App\Http\Controllers\PostController@getPo
 Route::post('/data/comment/get-by-user', 'App\Http\Controllers\CommentController@getCommentsByUser');
 
 Route::post('/files/upload-image', 'App\Http\Controllers\FileController@uploadImage');
+
+Route::get('/data/captcha/get-key', 'App\Http\Controllers\CaptchaController@getKey');

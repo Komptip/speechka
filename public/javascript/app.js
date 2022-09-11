@@ -28,6 +28,7 @@ var app = Vue.createApp(
 				sideCommentsPostsTitles: false,
 				postForEdit: false,
 				feedType: false,
+                recaptchaKey: '',
 				commentsreplies: {
 					'start': {
 						'attachment': false,
@@ -42,7 +43,7 @@ var app = Vue.createApp(
 						'attachment': false,
 						'sended': false
 					}
-					
+
 				},
 				settings: {
 					opened: false,
@@ -75,6 +76,7 @@ var app = Vue.createApp(
 				this.feedType = feedTypeElement.getAttribute('content');
 			}
 			this.getUserData();
+            this.getCaptchaKey();
 
 			let beforeMountFunctions = ['beforeMountProfile', 'beforeMountFeed', 'beforeMountViewpost', 'beforeMountSidecomments'];
 
@@ -86,8 +88,11 @@ var app = Vue.createApp(
 		},
 		methods: {
 			refreshCaptcha: function(){
+                if (app.recaptchaKey.length == 0) {
+                    return false;
+                }
 				grecaptcha.render("recaptcha", {
-		            sitekey: '6LfMf8YhAAAAAPZWfXU3NQubfDcnphJbHFFUQefB',
+		            sitekey: app.recaptchaKey,
 		            callback: function () {
 		                console.log('recaptcha callback');
 		            }
@@ -237,6 +242,17 @@ var app = Vue.createApp(
 					app.user = data.user;
 				});
 			},
+            getCaptchaKey: function() {
+				fetch('/data/captcha/get-key', {
+					method: 'GET',
+				})
+				.then((response) => {
+					return response.json();
+				})
+				.then((data) => {
+					app.recaptchaKey = data.key;
+				});
+            },
 			viewProfileType: function(type){
 				let userID = document.querySelector('meta[name="user_id"]').getAttribute('content');
 				window.location.href = '/u/' + userID + '/' + type;
@@ -254,11 +270,14 @@ var app = Vue.createApp(
 			},
 			signUp: function(event){
 				event.preventDefault();
-				let recaptcha = grecaptcha.getResponse();
 
-				if(recaptcha.length < 1){
-					return app.throwMessage('Пройдите капчу', 'error');
-				}
+                if(app.recaptchaKey.length > 0) {
+                    let recaptcha = grecaptcha.getResponse();
+
+                    if(recaptcha.length < 1){
+                        return app.throwMessage('Пройдите капчу', 'error');
+                    }
+                }
 
 				app.authAwaiting = true;
 				let form = event.target.closest('form');
@@ -270,7 +289,9 @@ var app = Vue.createApp(
 				})
 				.then((response) => {
 					app.catchResponse(response);
-					grecaptcha.reset();
+                    if(app.recaptchaKey.length > 0) {
+                        grecaptcha.reset();
+                    }
 					app.authAwaiting = false;
 					return response.json();
 				})
@@ -285,11 +306,13 @@ var app = Vue.createApp(
 			},
 			logIn: function(event){
 				event.preventDefault();
-				let recaptcha = grecaptcha.getResponse();
+                if(app.recaptchaKey.length > 0) {
+                    let recaptcha = grecaptcha.getResponse();
 
-				if(recaptcha.length < 1){
-					return app.throwMessage('Пройдите капчу', 'error');
-				}
+                    if(recaptcha.length < 1){
+                        return app.throwMessage('Пройдите капчу', 'error');
+                    }
+                }
 
 				app.authAwaiting = true;
 				let form = event.target.closest('form');
@@ -301,7 +324,9 @@ var app = Vue.createApp(
 				})
 				.then((response) => {
 					app.catchResponse(response);
-					grecaptcha.reset();
+                    if(app.recaptchaKey.length > 0) {
+                        grecaptcha.reset();
+                    }
 					app.authAwaiting = false;
 					return response.json();
 				})
@@ -311,11 +336,13 @@ var app = Vue.createApp(
 			},
 			passwordReset: function(event){
 				event.preventDefault();
-				let recaptcha = grecaptcha.getResponse();
+                if(app.recaptchaKey.length > 0) {
+                    let recaptcha = grecaptcha.getResponse();
 
-				if(recaptcha.length < 1){
-					return app.throwMessage('Пройдите капчу', 'error');
-				}
+                    if(recaptcha.length < 1){
+                        return app.throwMessage('Пройдите капчу', 'error');
+                    }
+                }
 
 				app.authAwaiting = true;
 				let form = event.target.closest('form');
@@ -327,7 +354,9 @@ var app = Vue.createApp(
 				})
 				.then((response) => {
 					app.catchResponse(response);
-					grecaptcha.reset();
+                    if(app.recaptchaKey.length > 0) {
+                        grecaptcha.reset();
+                    }
 					app.authAwaiting = false;
 					return response.json();
 				})
@@ -433,7 +462,7 @@ var app = Vue.createApp(
 				window.location.replace('/u/' + this.user.id);
 			},
 			newPost: function(event){
-				window.location.replace('/post/new');	
+				window.location.replace('/post/new');
 			},
 			publishPost: function(event){
 				app.postSended = true;
@@ -451,7 +480,7 @@ var app = Vue.createApp(
 								    convertTextarea.remove();
 									if(convertedText.replaceAll(/\s/g,'').length < 1){
 										app.postSended = false;
-										return app.throwMessage('Пост не может быть пустым', 'error');		
+										return app.throwMessage('Пост не может быть пустым', 'error');
 									}
 								}
 							}
@@ -492,7 +521,7 @@ var app = Vue.createApp(
 								    convertTextarea.remove();
 									if(convertedText.replaceAll(/\s/g,'').length < 1){
 										app.postSended = false;
-										return app.throwMessage('Пост не может быть пустым', 'error');		
+										return app.throwMessage('Пост не может быть пустым', 'error');
 									}
 								}
 							}
@@ -573,7 +602,7 @@ var app = Vue.createApp(
 					if(formattedText !== undefined){
 						return;
 					}
-					
+
 					if(step['max'] <= previousLevelValue){
 
 						previousLevelValue = Math.floor(previousLevelValue / step['max']);
@@ -783,7 +812,7 @@ var app = Vue.createApp(
 				 				app.sComments = [];
 				 			}
 
-				 			app.sComments[comment['id']] = comment;	
+				 			app.sComments[comment['id']] = comment;
 				 		}
 					});
 
@@ -810,7 +839,7 @@ var app = Vue.createApp(
 							app.users[userID] = users[userID];
 						});
 						post.ratingValue = app.countRating(data);
-						
+
 						post.rating = data;
 					});
 				});
@@ -822,7 +851,7 @@ var app = Vue.createApp(
 
 					comment['sub_comments']['ids'].forEach(function(subComment){
 						countOfSubcomments += app.countSubComments(app.comments[subComment]);
-					});	
+					});
 
 				}
 
@@ -847,7 +876,7 @@ var app = Vue.createApp(
 						Object.keys(users).forEach(function(userID){
 							app.users[userID] = users[userID];
 						});
-						
+
 						comment['rating_value'] = app.countRating(data);
 						comment['rating'] = data;
 					});
@@ -1022,7 +1051,7 @@ var app = Vue.createApp(
 			escapeLinksFromText: function(text){
 
 				let Rexp = /((http|https|ftp):\/\/[\w?=&.\/-;#~%-]+(?![\w\s?&.\/;#~%"=-]*>))/g;
-             
+
            		 return text.replace(Rexp, "<a href='$1' target='_blank'>$1</a>");
 			},
 			getUsersByID: async function(usersIds){
@@ -1094,7 +1123,7 @@ var app = Vue.createApp(
 		<div class="sub-comments" v-if="app.comments[id]['sub_comments'] || app.commentsreplies['reply']['reply_to'] == id">
 			<template v-if="app.comments[id]['sub_comments']['opened'] || app.commentsreplies['reply']['reply_to'] == id">
 				<div class="branch" v-on:click="app.comments[id]['sub_comments']['opened'] = false;">
-					
+
 				</div>
 				<div class="sub-comments-list">
 					<div class="comment-editor" v-if="app.commentsreplies['reply']['reply_to'] == id">
@@ -1126,10 +1155,10 @@ var app = Vue.createApp(
 		<div class="comment">
 			<div class="meta">
 				<div v-if="app.comments[id]['active']" class="icon" :style="'background-image: url(' + app.users[app.comments[id]['author_id']]['picture'] + ')'"  v-on:click="app.viewUserProfile(app.comments[id]['author_id'])">
-					
+
 				</div>
 				<div v-else style="background-image: url(/img/removed.webp)" class="icon">
-					
+
 				</div>
 				<div class="name-and-date" v-if="app.comments[id]['active']">
 					<p class="name" v-on:click="app.viewUserProfile(app.comments[id]['author_id'])">{{ app.users[app.comments[id]['author_id']]['name'] }}</p>
@@ -1145,7 +1174,7 @@ var app = Vue.createApp(
 					<div class="rating-list" v-if="Object.keys(app.comments[id]['rating']).length > 0">
 						<a class="user" v-for="(rate, id) in app.comments[id]['rating']" :href="'/u/' + id">
 							<div class="pic" :style="'background-image: url(' + app.users[id]['picture'] + ');'">
-								
+
 							</div>
 							<p :class="rate == 1 ? 'positive' : 'negative'">{{ app.users[id]['name'] }}</p>
 						</a>
@@ -1173,7 +1202,7 @@ var app = Vue.createApp(
 		<template v-for="commentID in app.commentsOrder">
 			<template v-if="app.comments[commentID] !== undefined">
 				<template v-if="app.comments[commentID]['reply_to'] == null">
-					<comment :app="app" :id="commentID"></comment>			
+					<comment :app="app" :id="commentID"></comment>
 				</template>
 			</template>
 		</template>
