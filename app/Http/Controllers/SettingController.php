@@ -33,11 +33,11 @@ class SettingController extends Controller
             'photo.mines' => 'Неподходящий формат',
             'photo.max' => 'Максимальная размер Изображения - 4 мегобайта',
             'new_password.string' => 'Новый пароль должен быть строкой',
-            'new_password.min' => 'Новый пароль слишком короткий', 
+            'new_password.min' => 'Новый пароль слишком короткий',
             'new_password.max' => 'Новый пароль слишком длинный',
             'old_password.string' => 'Новый пароль должен быть строкой',
-            'old_password.min' => 'Старый пароль слишком короткий', 
-            'old_password.max' => 'Старый пароль слишком длинный' 
+            'old_password.min' => 'Старый пароль слишком короткий',
+            'old_password.max' => 'Старый пароль слишком длинный'
         ]);
 
         if($validate->fails()){
@@ -64,7 +64,7 @@ class SettingController extends Controller
 
             $user->password = password_hash($request->new_password, PASSWORD_DEFAULT);
             $user->save();
-        }  
+        }
 
         if(isset($request->photo)){
 

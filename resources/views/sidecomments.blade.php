@@ -1,5 +1,5 @@
 <div class="sidecomments" v-if="!sideCommentsHidden">
-	<h3 v-on:click="sideCommentsHidden = true">Комменарии</h3>
+	<h3 v-on:click="sideCommentsHidden = true">Комментарии</h3>
 	<template v-if="sideComments && sideCommentsPostsTitles">
 		<div class="comment" v-for="comment in sideComments" v-on:click="viewCommentOrigin(sComments[comment].post_id)">
 			<div class="comment-post">
@@ -8,7 +8,7 @@
 			<div class="comment-content">
 				<div class="meta">
 					<a class="icon" :href="'/u/' + sComments[comment].author_id" :style="'background-image: url(' + users[sComments[comment]['author_id']].picture + ')'">
-						
+
 					</a>
 					<div class="name-and-date">
 						<a class="name" :href="'/u/' + sComments[comment].author_id">@{{ users[sComments[comment]['author_id']].name }}</a>

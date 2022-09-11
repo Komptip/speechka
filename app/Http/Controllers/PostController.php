@@ -87,7 +87,7 @@ class PostController extends Controller
                 'action' => 'error',
                 'data' => $validate->errors()->first()
             ];
-        } 
+        }
 
         $data = $request->json()->all();
 
@@ -167,7 +167,7 @@ class PostController extends Controller
                 'action' => 'error',
                 'data' => $validate->errors()->first()
             ];
-        } 
+        }
 
         $data = $request->json()->all();
 
@@ -184,7 +184,7 @@ class PostController extends Controller
             ];
         }
 
-        
+
         $validateResult = self::validatePostData($data);
 
         if($validateResult !== true){
@@ -256,7 +256,7 @@ class PostController extends Controller
             'integration' => [
                 'url'
             ]
-        ]; 
+        ];
 
         $allowedTextTags = [
             'a' => [
@@ -287,7 +287,7 @@ class PostController extends Controller
             return [
                 'action' => 'error',
                 'data' => 'Ошибка в структуре поста'
-            ];  
+            ];
         }
 
         if(count($data['data']) > 50){
@@ -302,7 +302,7 @@ class PostController extends Controller
                 return [
                     'action' => 'error',
                     'data' => 'Ошибка в структуре элемента'
-                ];         
+                ];
             }
 
             if(!isset($allowedPostTags[$element['type']])){
@@ -345,7 +345,7 @@ class PostController extends Controller
 
                     if(strlen($value) > 0){
                         $doc = new DOMDocument();
-                        @$doc->loadHTML("test" . $value);    
+                        @$doc->loadHTML("test" . $value);
 
                         $result = $doc->getElementsByTagName('*');
 
@@ -354,8 +354,8 @@ class PostController extends Controller
                                 return [
                                     'action' => 'error',
                                     'data' => 'Текст и/или атрибут одного из элементов содержит запрещенные тэги'
-                                ];           
-                            }     
+                                ];
+                            }
 
                             if($node->childNodes->length > 0){
                                 foreach ($node->childNodes as $chldNode) {
@@ -363,7 +363,7 @@ class PostController extends Controller
                                         return [
                                             'action' => 'error',
                                             'data' => 'Текст и/или атрибут одного из элементво содержит запрещенные под-тэги'
-                                        ];  
+                                        ];
                                     }
                                 }
 
@@ -371,9 +371,9 @@ class PostController extends Controller
                                     return [
                                         'action' => 'error',
                                         'data' => 'Запрещенный уроверь вложенности'
-                                    ];  
+                                    ];
                                 }
-                            }                     
+                            }
 
                             if ($node->hasAttributes()) {
                                 foreach ($node->attributes as $attr) {
@@ -415,7 +415,7 @@ class PostController extends Controller
 
                         if(strlen($subvalue) > 0){
                             $doc = new DOMDocument();
-                            $doc->loadHTML("test" . $subvalue);    
+                            $doc->loadHTML("test" . $subvalue);
 
                             $result = $doc->getElementsByTagName('*');
 
@@ -424,8 +424,8 @@ class PostController extends Controller
                                     return [
                                         'action' => 'error',
                                         'data' => 'Текст и/или атрибут одного из элементов содержит запрещенные тэги'
-                                    ];           
-                                }     
+                                    ];
+                                }
 
                                 if($node->childNodes->length > 0){
                                     foreach ($node->childNodes as $chldNode) {
@@ -433,7 +433,7 @@ class PostController extends Controller
                                             return [
                                                 'action' => 'error',
                                                 'data' => 'Текст и/или атрибут одного из элементво содержит запрещенные под-тэги'
-                                            ];  
+                                            ];
                                         }
                                     }
 
@@ -441,9 +441,9 @@ class PostController extends Controller
                                         return [
                                             'action' => 'error',
                                             'data' => 'Запрещенный уроверь вложенности'
-                                        ];  
+                                        ];
                                     }
-                                }                     
+                                }
 
                                 if ($node->hasAttributes()) {
                                     foreach ($node->attributes as $attr) {
@@ -490,7 +490,7 @@ class PostController extends Controller
                 'action' => 'error',
                 'data' => $validate->errors()->first()
             ];
-        } 
+        }
 
         $data = $request->all();
 
@@ -535,7 +535,7 @@ class PostController extends Controller
                 'action' => 'error',
                 'data' => $validate->errors()->first()
             ];
-        } 
+        }
 
         $data = $request->all();
 
@@ -580,7 +580,7 @@ class PostController extends Controller
                 'action' => 'error',
                 'data' => $validate->errors()->first()
             ];
-        }  
+        }
 
         $postsToSend = [];
 
@@ -588,7 +588,7 @@ class PostController extends Controller
 
         $query = Posts::whereIn('id', $data['ids']);
 
-        foreach ($data['ids'] as $id) { 
+        foreach ($data['ids'] as $id) {
             $query->orderByRaw("id = {$id} desc");
         }
 
@@ -631,8 +631,8 @@ class PostController extends Controller
             $postToSend['grade'] = null;
 
             if($user !== false){
-                $rating = Rating::where(['user_id' => $user->id, 
-                    'type' => 0, 
+                $rating = Rating::where(['user_id' => $user->id,
+                    'type' => 0,
                     'entity_id' => $post->id])->first();
                 if($rating !== null){
                     $postToSend['grade'] = $rating->value == 1;
@@ -693,7 +693,7 @@ class PostController extends Controller
                 'action' => 'error',
                 'data' => $validate->errors()->first()
             ];
-        } 
+        }
 
         $data = $request->all();
 
@@ -704,7 +704,7 @@ class PostController extends Controller
                 'action' => 'error',
                 'data' => 'Пост не найден'
             ];
-        } 
+        }
 
         if($post->user_id !== $user->id){
             return [
@@ -768,7 +768,7 @@ class PostController extends Controller
                 'action' => 'error',
                 'data' => $validate->errors()->first()
             ];
-        }  
+        }
 
         $data = $request->all();
 
@@ -797,7 +797,7 @@ class PostController extends Controller
                 'action' => 'error',
                 'data' => $validate->errors()->first()
             ];
-        } 
+        }
 
         $data = $request->all();
 
@@ -826,49 +826,49 @@ class PostController extends Controller
                 'action' => 'error',
                 'data' => $validate->errors()->first()
             ];
-        }  
+        }
 
         $data = $request->all();
 
         if(isset($data['black-list'])){
             $posts = DB::select('
-                SELECT posts.id, 
+                SELECT posts.id,
                 (
-                    (? - posts.created_at) / 
+                    (? - posts.created_at) /
                     SUM(IF(ratings.value=0, -1, IF(ratings.value=1, 1, 0)))
                 ) AS ratio, SUM(IF(ratings.value=0, -1, IF(ratings.value=1, 1, 0))) as rating
-                FROM posts 
-                LEFT JOIN ratings 
+                FROM posts
+                LEFT JOIN ratings
                     ON posts.id = ratings.entity_id  AND ratings.type = 0
                 WHERE posts.id NOT IN (' . implode(',', $data['black-list']) . ') AND posts.active = 1
                 GROUP BY posts.id
-                ORDER BY case 
+                ORDER BY case
                     when  (SUM(IF(ratings.value=0, -1, IF(ratings.value=1, 1, 0))) < 0)
                     then 3
-                    when (((?  - posts.created_at) / SUM(IF(ratings.value=0, -1, IF(ratings.value=1, 1, 0)))) is null) 
+                    when (((?  - posts.created_at) / SUM(IF(ratings.value=0, -1, IF(ratings.value=1, 1, 0)))) is null)
                     then 2
-                    when SUM(IF(ratings.value=0, -1, IF(ratings.value=1, 1, 0))) < 5 then 1 else 0 end, 
+                    when SUM(IF(ratings.value=0, -1, IF(ratings.value=1, 1, 0))) < 5 then 1 else 0 end,
                     ((?  - posts.created_at) / SUM(IF(ratings.value=0, -1, IF(ratings.value=1, 1, 0))))
                 LIMIT ?;
                 ', [time(), time(), time(), 10]);
         } else {
             $posts = DB::select('
-                SELECT posts.id, 
+                SELECT posts.id,
                 (
-                    (? - posts.created_at) / 
+                    (? - posts.created_at) /
                     SUM(IF(ratings.value=0, -1, IF(ratings.value=1, 1, 0)))
                 ) AS ratio, SUM(IF(ratings.value=0, -1, IF(ratings.value=1, 1, 0))) as rating
-                FROM posts 
-                LEFT JOIN ratings 
+                FROM posts
+                LEFT JOIN ratings
                     ON posts.id = ratings.entity_id AND ratings.type = 0
                 WHERE posts.active = 1
                 GROUP BY posts.id
-                ORDER BY case 
+                ORDER BY case
                     when  (SUM(IF(ratings.value=0, -1, IF(ratings.value=1, 1, 0))) < 0)
                     then 3
-                    when (((?  - posts.created_at) / SUM(IF(ratings.value=0, -1, IF(ratings.value=1, 1, 0)))) is null) 
+                    when (((?  - posts.created_at) / SUM(IF(ratings.value=0, -1, IF(ratings.value=1, 1, 0)))) is null)
                     then 2
-                    when SUM(IF(ratings.value=0, -1, IF(ratings.value=1, 1, 0))) < 5 then 1 else 0 end, 
+                    when SUM(IF(ratings.value=0, -1, IF(ratings.value=1, 1, 0))) < 5 then 1 else 0 end,
                     ((?  - posts.created_at) / SUM(IF(ratings.value=0, -1, IF(ratings.value=1, 1, 0))))
                 LIMIT ?;
                 ', [time(), time(), time(), 10]);
@@ -902,7 +902,7 @@ class PostController extends Controller
                 'action' => 'error',
                 'data' => $validate->errors()->first()
             ];
-        }  
+        }
 
         $postsToSend = [];
 
@@ -910,7 +910,7 @@ class PostController extends Controller
 
         $query = Posts::whereIn('id', $data['ids']);
 
-        foreach ($data['ids'] as $id) { 
+        foreach ($data['ids'] as $id) {
             $query->orderByRaw("id = {$id} desc");
         }
 
@@ -928,7 +928,7 @@ class PostController extends Controller
     }
 
     public function setRating(Request $request){
-        
+
         $user = AuthController::isUserAuth($request);
         if($user === false){
             return [
@@ -959,7 +959,7 @@ class PostController extends Controller
             return [
                 'action' => 'error',
                 'data' => 'Некоректный тип'
-            ];   
+            ];
         }
 
         $post = Posts::where(['id' => $data['entity_id']])->first();
@@ -968,14 +968,14 @@ class PostController extends Controller
             return [
                 'action' => 'error',
                 'data' => 'Сущность не найдена'
-            ];   
+            ];
         }
 
         if($post->user_id == $user->id){
             return [
                 'action' => 'error',
                 'data' => 'Нельзя лайкать самого себя'
-            ];   
+            ];
         }
 
         Rating::where(['type' => 0, 'user_id' => $user->id, 'entity_id' => $data['entity_id']])->delete();
@@ -1006,7 +1006,7 @@ class PostController extends Controller
                 'data' => $validate->errors()->first()
             ];
         }
-        
+
         $data = $request->all();
         $post = Posts::where(['id' => $data['entity_id']])->first();
 

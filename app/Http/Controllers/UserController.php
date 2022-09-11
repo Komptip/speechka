@@ -46,7 +46,7 @@ class UserController extends Controller
                 'action' => 'error',
                 'data' => $validate->errors()->first()
             ];
-        }  
+        }
 
         $data = $request->all();
 
