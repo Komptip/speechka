@@ -1,6 +1,7 @@
 <meta charset="utf-8">
+
 <title>Спичка</title>
-<link rel="icon" type="image/png" href="/img/favicon.svg"/>
+<link rel="icon" type="image/png" href="https://speech-ka.com/img/favicon.svg"/>
 <link rel="stylesheet" type="text/css" href="/css/basics.css?key={{ uniqid() }}">
 <link rel="stylesheet" type="text/css" href="/css/header.css?key={{ uniqid() }}">
 <link rel="stylesheet" type="text/css" href="/css/sidebar.css?key={{ uniqid() }}">
@@ -17,8 +18,9 @@
 <link rel="stylesheet" type="text/css" href="/css/window.css">
 <script src="/javascript/sidecomments.js?key={{ uniqid() }}"></script>
 
-<meta property="og:title" content="Спичка">
-<meta property="og:site_name" content="Speech-ka">
-<meta property="og:url" content="{{ url('') }}">
-<meta property="og:description" content="Место для свободного общения">
-<meta property="og:image" content="/img/favicon.svg">
+<meta property="og:title" content="Спичка"/>
+<meta property="og:site_name" content="Speech-ka"/>
+<meta property="og:type" content="website"/>
+<meta property="og:url" content="https://speech-ka.com/"/>
+<meta property="og:description" content="Место для свободного общения"/>
+<meta property="og:image" content="https://speech-ka.com/img/speech-ka.jpg"/>

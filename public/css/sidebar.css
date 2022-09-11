@@ -1,5 +1,5 @@
 .sidebar {
-	width: 220px;
+	width: 200px;
 	height: 100%;
 
 	background-color: #F2F2F2;
@@ -87,13 +87,13 @@
 	align-items: center;
 }
 
-@media only screen and (max-width: 1150px) {
+@media only screen and (max-width: 980px) {
 	.sidebar {
 		position: static;
 	}
 }
 
-@media only screen and (max-width: 1000px) {
+@media only screen and (max-width: 980px) {
 	.sidebar {
 		display: none;
 	}
