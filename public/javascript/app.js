@@ -27,6 +27,29 @@ var app = Vue.createApp(
 				sideCommentsPostsTitles: false,
 				postForEdit: false,
 				feedType: false,
+				viewAllCommunities: false,
+				communities: {},
+				sideCommunitiesOrder: false,
+				communitiesListLimit: 5,
+				currentCommunity: false,
+				adminInCommunities: [],
+				communityWindow: false,
+				newCommunityPhotoPreview: false,
+				communityIsSaving: false,
+				hideNewPostButton: false,
+				newPostCommunity: {
+					listHidden: true,
+					communitiesToShow: [
+
+					],
+					searchFilter: '',
+					selected: 0,
+				},
+				communitySettingsOpened: false,
+				communitiesSettings: {
+
+				},
+				communitiesLoaed: false,
 				commentsreplies: {
 					'start': {
 						'attachment': false,
@@ -75,15 +98,77 @@ var app = Vue.createApp(
 			}
 			this.getUserData();
 
-			let beforeMountFunctions = ['beforeMountProfile', 'beforeMountFeed', 'beforeMountViewpost', 'beforeMountSidecomments'];
+			this.loadSideCommunities();
+
+			let app = this;
+
+			let beforeMountFunctions = ['beforeMountProfile', 'beforeMountFeed', 'beforeMountViewpost', 'beforeMountSidecomments', 'beforeMountCommunity'];
+
+			if(typeof newpost !== 'undefined'){
+				app.hideNewPostButton = true;
+			}
 
 			beforeMountFunctions.forEach(function(beforeMountFunction){
 				if(typeof window[beforeMountFunction] === "function"){
-					window[beforeMountFunction]();
+					window[beforeMountFunction](app);
 				}
 			});
 		},
 		methods: {
+			loadNewPostCommunity: function(){
+				fetch('/data/community/all', {
+					method: 'POST',
+					headers: {'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')}
+				})
+				.then((response) => {
+					return response.json();
+				})
+				.then((data) => {
+
+					let request = app.getCommunitiesByID(data, true);
+
+					Promise.all([request]).then((results) => {
+					 	
+						let loadedCommunities = results[0];
+
+						app.newPostCommunity.communitiesToShow.push({
+							'name': 'Мой блог',
+							'picture': app.user.picture,
+							'id': false
+						});
+
+						let getparams = {}
+						location.search.substr(1).split("&").forEach(function(item) {getparams[item.split("=")[0]] = item.split("=")[1]})
+
+						Object.keys(loadedCommunities).forEach(function(communityID){
+
+							if(getparams.community_id !== undefined){
+								if(getparams.community_id === communityID){
+									app.newPostCommunity.selected = app.newPostCommunity.communitiesToShow.length;
+								}
+							}
+
+							app.newPostCommunity.communitiesToShow.push({
+								'name': loadedCommunities[communityID].name,
+								'picture': loadedCommunities[communityID].picture,
+								'id': communityID
+							});
+						});
+
+						app.communitiesLoaed = true;
+
+					});
+
+				});
+			},
+			filterCommunities: function(communities, filter){
+				let filterLC = filter.toLowerCase();
+				communities.forEach(function(community, id){
+					communities[id].display = community.name.toLowerCase().includes(filterLC) ? true : false;
+				});
+
+				return communities;
+			},
 			refreshCaptcha: function(){
 				grecaptcha.render("recaptcha", {
 		            sitekey: '6LfMf8YhAAAAAPZWfXU3NQubfDcnphJbHFFUQefB',
@@ -99,6 +184,29 @@ var app = Vue.createApp(
 			},
 			viewPost: function(post){
 				window.location.href = '/p/' + post.id;
+			},
+			loadSideCommunities: function(){
+				fetch('/data/community/get-for-sidebar', {
+					method: 'POST',
+					headers: {'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')}
+				})
+				.then((response) => {
+					app.catchResponse(response);
+					return response.json();
+				})
+				.then((data) => {
+					app.sideCommunitiesOrder = data;
+
+					let request = app.getCommunitiesByID(data);
+
+					Promise.all([request]).then((results) => {
+					 	
+						Object.keys(results[0]).forEach(function(id){
+							app.communities[id] = results[0][id];
+						});
+
+					});	
+				});
 			},
 			parseURL: function(url){
 				setTimeout(function(){
@@ -201,6 +309,270 @@ var app = Vue.createApp(
 				post.showMore = false;
 				window.location.href = '/post/edit/' + post.id;
 			},
+			showCommunitySettings: function(){
+				app.communitySettingsOpened = true;
+				let formData = new FormData();
+				formData.append('community_id', app.currentCommunity);
+				fetch('/data/settings/community/get', {
+					method: 'POST',
+					body: formData,
+					headers: {'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')}
+				})
+				.then((response) => {
+					app.catchResponse(response);
+					return response.json();
+				})
+				.then((data) => {
+					data.newpicture = false;
+
+					let adminsRequest = app.getCommunityAmins(app.currentCommunity);
+					let blacklistRequest = app.getCommunityBlacklist(app.currentCommunity);
+
+					Promise.all([adminsRequest, blacklistRequest]).then(results => {
+
+						usersToGet = app.getUsersByID(results[0].concat(results[1]));
+
+						Promise.all([usersToGet]).then((usrResults) => {
+						 	let users = usrResults[0];
+						 	Object.keys(users).forEach(function(userID){
+								app.users[userID] = users[userID];
+							});
+
+						 	data.admins = results[0];
+						 	data.blacklist = results[1];
+
+							app.communitiesSettings[app.currentCommunity] = data;
+
+						});
+					});
+				});
+			},
+			getCommunityAmins: async function(communityID){
+				let formData = new FormData();
+				formData.append('community_id', communityID);
+
+				return await fetch('/data/settings/community/get-admins', {
+					method: 'POST',
+					headers: {'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')},
+					body: formData
+				})
+				.then((response) => {
+					return response.json();
+				})
+				.then((data) => {
+					return data;
+				});
+			},
+			getCommunityBlacklist: async function(communityID){
+				let formData = new FormData();
+				formData.append('community_id', communityID);
+
+				return await fetch('/data/settings/community/get-blacklist', {
+					method: 'POST',
+					headers: {'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')},
+					body: formData
+				})
+				.then((response) => {
+					return response.json();
+				})
+				.then((data) => {
+					return data;
+				});
+			},
+			addCommunityAdmin: function(event){
+				event.preventDefault();
+				
+				let formData = new FormData();
+				formData.append('community_id', app.currentCommunity);
+				formData.append('user', event.target.previousSibling.value);
+
+				fetch('/data/settings/community/add-admin', {
+					method: 'POST',
+					headers: {'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')},
+					body: formData
+				})
+				.then((response) => {
+					app.catchResponse(response);
+					return response.json();
+				})
+				.then((data) => {
+					app.handleResponse(data);
+					if(data.action == 'success'){
+						event.target.previousSibling.value = null;
+						let adminsRequest = app.getCommunityAmins(app.currentCommunity);
+
+						Promise.all([adminsRequest]).then(results => {
+							usersToGet = app.getUsersByID(results[0]);
+
+							Promise.all([usersToGet]).then((usrResults) => {
+							 	let users = usrResults[0];
+							 	Object.keys(users).forEach(function(userID){
+									app.users[userID] = users[userID];
+								});
+							
+								app.communitiesSettings[app.currentCommunity].admins = results[0];
+
+							});
+						});
+					}
+				});
+			},
+			addUserToCommunityBlacklist: function(event){
+				event.preventDefault();
+				
+				let formData = new FormData();
+				formData.append('community_id', app.currentCommunity);
+				formData.append('user', event.target.previousSibling.value);
+
+				fetch('/data/settings/community/add-to-blacklist', {
+					method: 'POST',
+					headers: {'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')},
+					body: formData
+				})
+				.then((response) => {
+					app.catchResponse(response);
+					return response.json();
+				})
+				.then((data) => {
+					app.handleResponse(data);
+					if(data.action == 'success'){
+						event.target.previousSibling.value = null;
+						let blacklistRequest = app.getCommunityBlacklist(app.currentCommunity);
+
+						Promise.all([blacklistRequest]).then(results => {
+							usersToGet = app.getUsersByID(results[0]);
+
+							Promise.all([usersToGet]).then((usrResults) => {
+							 	let users = usrResults[0];
+							 	Object.keys(users).forEach(function(userID){
+									app.users[userID] = users[userID];
+								});
+							
+								app.communitiesSettings[app.currentCommunity].blacklist = results[0];
+
+							});
+						});
+					}
+				});
+			},
+			removeUserFromCommunityBlacklist: function(user_id){
+				event.preventDefault();
+
+				if(user_id == app.user.id){
+					return app.throwMessage('Невозможно удалить из администраторов подсайта самого себя', 'error');
+				}
+				
+				let formData = new FormData();
+				formData.append('community_id', app.currentCommunity);
+				formData.append('user_id', user_id);
+
+				fetch('/data/settings/community/remove-from-blacklist', {
+					method: 'POST',
+					headers: {'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')},
+					body: formData
+				})
+				.then((response) => {
+					app.catchResponse(response);
+					return response.json();
+				})
+				.then((data) => {
+					app.handleResponse(data);
+					if(data.action == 'success'){
+						let blacklistRequest = app.getCommunityBlacklist(app.currentCommunity);
+
+						Promise.all([blacklistRequest]).then(results => {
+							usersToGet = app.getUsersByID(results[0]);
+
+							Promise.all([usersToGet]).then((usrResults) => {
+							 	let users = usrResults[0];
+							 	Object.keys(users).forEach(function(userID){
+									app.users[userID] = users[userID];
+								});
+							
+								app.communitiesSettings[app.currentCommunity].blacklist = results[0];
+
+							});
+						});
+					}
+				});
+			},
+			removeCommunityAdmin: function(user_id){
+				event.preventDefault();
+
+				if(user_id == app.user.id){
+					return app.throwMessage('Невозможно удалить из администраторов подсайта самого себя', 'error');
+				}
+				
+				let formData = new FormData();
+				formData.append('community_id', app.currentCommunity);
+				formData.append('user_id', user_id);
+
+				fetch('/data/settings/community/remove-admin', {
+					method: 'POST',
+					headers: {'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')},
+					body: formData
+				})
+				.then((response) => {
+					app.catchResponse(response);
+					return response.json();
+				})
+				.then((data) => {
+					app.handleResponse(data);
+					if(data.action == 'success'){
+						let adminsRequest = app.getCommunityAmins(app.currentCommunity);
+
+						Promise.all([adminsRequest]).then(results => {
+							usersToGet = app.getUsersByID(results[0]);
+
+							Promise.all([usersToGet]).then((usrResults) => {
+							 	let users = usrResults[0];
+							 	Object.keys(users).forEach(function(userID){
+									app.users[userID] = users[userID];
+								});
+							
+								app.communitiesSettings[app.currentCommunity].admins = results[0];
+
+							});
+						});
+					}
+				});
+			},
+			saveCommunity: function(event){
+				event.preventDefault();
+				app.communityIsSaving = true;
+
+				let formData = new FormData(event.target);
+				formData.append('new_picture', app.communitiesSettings[app.currentCommunity].newpicture === false ? false : true);
+				formData.append('community_id', app.currentCommunity);
+				fetch('/data/settings/community/set', {
+					method: 'POST',
+					body: formData,
+					headers: {'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')}
+				})
+				.then((response) => {
+					app.communityIsSaving = false;
+					app.catchResponse(response);
+					return response.json();
+				})
+				.then((data) => {
+					app.handleResponse(data);
+
+					if(data.action === 'success'){
+
+						let request = app.getCommunitiesByID([app.currentCommunity], true);
+
+						Promise.all([request]).then((results) => {
+						 	
+							let communities = results[0];
+						 	Object.keys(communities).forEach(function(communityID){
+								app.communities[communityID] = communities[communityID];
+							});
+
+						});
+
+					}
+				});
+			},
 			republishPost: function(post){
 				post.showMore = false;
 				if(app.postIsDeleting){
@@ -234,6 +606,7 @@ var app = Vue.createApp(
 				})
 				.then((data) => {
 					app.user = data.user;
+					this.loadNewPostCommunity();
 				});
 			},
 			viewProfileType: function(type){
@@ -308,6 +681,27 @@ var app = Vue.createApp(
 					app.handleResponse(data);
 				});
 			},
+			createCommunity: function(event){
+				event.preventDefault();
+
+				app.authAwaiting = true;
+				let form = event.target.closest('form');
+				let formData = new FormData(form);
+				fetch('/data/community/create', {
+					method: 'POST',
+					body: formData,
+					headers: {'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')}
+				})
+				.then((response) => {
+					app.catchResponse(response);
+					app.authAwaiting = false;
+					return response.json();
+				})
+				.then((data) => {
+					app.handleResponse(data);
+					console.log(data);
+				});				
+			},
 			passwordReset: function(event){
 				event.preventDefault();
 				let recaptcha = grecaptcha.getResponse();
@@ -376,6 +770,12 @@ var app = Vue.createApp(
 			},
 			onUploadPhoto: function(event){
 				app.settings.data.photoPreview = URL.createObjectURL(event.target.files[0]);
+			},
+			onUploadCommunityPhoto: function(event){
+				app.newCommunityPhotoPreview = URL.createObjectURL(event.target.files[0]);
+			},
+			onChangeCommunityPhoto: function(event, id){
+				app.communitiesSettings[id].newpicture = URL.createObjectURL(event.target.files[0]);
 			},
 			uploadPhoto: function(event){
 				event.target.closest('.box').querySelector('.file-uploader').click();
@@ -457,12 +857,17 @@ var app = Vue.createApp(
 						}
 					}
 					if(event.target.closest('.large').querySelector('h1').innerText.length > 120){
+<<<<<<< HEAD
 						return app.throwMessage('Заголовок не может превышать 120 символов', 'error');
+=======
+						app.postSended = false;
+						return app.throwMessage('Заголвок не может привышать 120 символов', 'error');
+>>>>>>> 06ee5eb (Communities added)
 					}
 					let formdata = new FormData();
 					fetch('/data/post/create', {
 						method: 'POST',
-						body: JSON.stringify({'data': outputData.blocks, 'title': event.target.closest('.large').querySelector('h1').innerText}),
+						body: JSON.stringify({'data': outputData.blocks, 'title': event.target.closest('.large').querySelector('h1').innerText, 'community_id': app.newPostCommunity.communitiesToShow[app.newPostCommunity.selected].id}),
 						headers: {'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')}
 					})
 					.then((response) => {
@@ -721,20 +1126,32 @@ var app = Vue.createApp(
 				}
 
 				let usersIds = [];
+				let communitiesIds = [];
 
 				data.forEach(function(post){
 					usersIds = usersIds.concat(Object.keys(post['rating']));
 					usersIds.push(post.author_id);
+
+					if(post['community_id']){
+						communitiesIds.push(post['community_id']);
+					}
 				});
 
 				usersIds = [...new Set(usersIds)];
+				communitiesIds = [...new Set(communitiesIds)];
 
-				let request = app.getUsersByID(usersIds);
+				let usersReq = app.getUsersByID(usersIds);
+				let commmunitiesReq = app.getCommunitiesByID(communitiesIds);
 
-				Promise.all([request]).then((results) => {
+				Promise.all([usersReq, commmunitiesReq]).then((results) => {
 				 	let users = results[0];
 				 	Object.keys(users).forEach(function(userID){
 						app.users[userID] = users[userID];
+					});
+
+					let communities = results[1];
+				 	Object.keys(communities).forEach(function(communityID){
+						app.communities[communityID] = communities[communityID];
 					});
 
 					data.forEach(function(post){
@@ -954,6 +1371,60 @@ var app = Vue.createApp(
 					loadComments();
 				});
 			},
+			deleteCommunity: function(id){
+				let formData = new FormData();
+				formData.append('entity_id', id);
+				fetch('/data/community/ban', {
+					method: 'POST',
+					body: formData,
+					headers: {'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')}
+				})
+				.then((response) => {
+					app.catchResponse(response);
+					return response.json();
+				})
+				.then((data) => {
+					app.handleResponse(data);
+
+					let request = app.getCommunitiesByID([app.currentCommunity], true);
+
+					Promise.all([request]).then((results) => {
+					 	
+						let communities = results[0];
+					 	Object.keys(communities).forEach(function(communityID){
+							app.communities[communityID] = communities[communityID];
+						});
+
+					});
+				});
+			},
+			undeleteCommunity: function(id){
+				let formData = new FormData();
+				formData.append('entity_id', id);
+				fetch('/data/community/unban', {
+					method: 'POST',
+					body: formData,
+					headers: {'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')}
+				})
+				.then((response) => {
+					app.catchResponse(response);
+					return response.json();
+				})
+				.then((data) => {
+					app.handleResponse(data);
+
+					let request = app.getCommunitiesByID([app.currentCommunity], true);
+
+					Promise.all([request]).then((results) => {
+					 	
+						let communities = results[0];
+					 	Object.keys(communities).forEach(function(communityID){
+							app.communities[communityID] = communities[communityID];
+						});
+
+					});
+				});
+			},
 			uplaodAttachment: function(event){
 				event.target.previousSibling.click();
 			},
@@ -1033,6 +1504,30 @@ var app = Vue.createApp(
 				});
 
 				return await fetch('/data/users/get', {
+					method: 'POST',
+					headers: {'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')},
+					body: formData
+				})
+				.then((response) => {
+					return response.json();
+				})
+				.then((data) => {
+					return data;
+				});
+			},
+			getCommunitiesByID: async function(communitiesIds, force=false){
+				let formData = new FormData();
+				communitiesIds.forEach(function(id){
+					if(force === false){
+						if(app.communities[id] === undefined){
+							formData.append('ids[]', id);
+						}
+					} else {
+						formData.append('ids[]', id);
+					}
+				});
+
+				return await fetch('/data/community/get', {
 					method: 'POST',
 					headers: {'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')},
 					body: formData

@@ -102,6 +102,7 @@
 		</div>
 
 		@include('authwindows')
+		@include('communitywindows')
 		@include('settings')
 		@include('messages')
 

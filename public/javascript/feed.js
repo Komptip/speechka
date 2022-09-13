@@ -1,5 +1,5 @@
 var scrollListener = function(e){
-		let bottomOfWindow = document.documentElement.scrollTop + window.innerHeight >= (document.querySelector('body').offsetHeight - 100);
+		let bottomOfWindow = (window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0) + window.innerHeight >= (document.querySelector('body').offsetHeight - 100);
         if (bottomOfWindow) {
         	let blackList = [];
         	Object.keys(app.posts).forEach(function(postID){

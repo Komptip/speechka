@@ -14,7 +14,7 @@
 		</div>
 	</div>
 	<div class="right" v-if="user">
-		<div class="new-post" v-on:click="newPost">
+		<div class="new-post" v-on:click="newPost" v-if="!hideNewPostButton">
 			<img src="/img/write.svg">
 			<p>Написать пост</p>
 		</div>
