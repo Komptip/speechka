@@ -1,4 +1,3 @@
-
 var app = Vue.createApp(
 	{
 		data() {
@@ -458,7 +457,7 @@ var app = Vue.createApp(
 						}
 					}
 					if(event.target.closest('.large').querySelector('h1').innerText.length > 120){
-						return app.throwMessage('Заголвок не может привышать 120 символов', 'error');
+						return app.throwMessage('Заголовок не может превышать 120 символов', 'error');
 					}
 					let formdata = new FormData();
 					fetch('/data/post/create', {
