@@ -64,8 +64,7 @@ class CommunityController extends Controller
                 }
             }
 
-            $image_resize = Image::make($request->photo->getRealPath());
-            $image_resize->save(public_path('uploaded/images/' . $filename));
+            $request->photo->move(public_path('uploaded/images'), $filename);
 
             $newCommunity->picture = '/uploaded/images/' . $filename;
 

@@ -81,8 +81,7 @@ class SettingController extends Controller
                 }
             }
 
-            $image_resize = Image::make($request->photo->getRealPath());
-            $image_resize->save(public_path('uploaded/images/' . $filename));
+            $request->picture->move(public_path('uploaded/images'), $filename);
 
             $user->picture = '/uploaded/images/' . $filename;
             $user->save();
@@ -189,8 +188,7 @@ class SettingController extends Controller
                 }
             }
 
-            $image_resize = Image::make($request->picture->getRealPath());
-            $image_resize->save(public_path('uploaded/images/' . $filename));
+            $request->picture->move(public_path('uploaded/images'), $filename);
 
             $community->picture = '/uploaded/images/' . $filename;
             $community->save();
