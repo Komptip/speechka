@@ -571,7 +571,7 @@ class PostController extends Controller
                 ];
             }
 
-            if(CommunityAdmins::where(['community_id' => $postCommunity->id, 'user_id' => $user->id])->first() === null){
+            if(CommunityAdmins::where(['community_id' => $postCommunity->community_id, 'user_id' => $user->id])->first() === null){
                 return [
                     'action' => 'error',
                     'data' => 'Пост не найден'
