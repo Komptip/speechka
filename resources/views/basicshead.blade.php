@@ -18,9 +18,21 @@
 <link rel="stylesheet" type="text/css" href="/css/window.css">
 <script src="/javascript/sidecomments.js?key={{ uniqid() }}"></script>
 
-<meta property="og:title" content="Спичка"/>
-<meta property="og:site_name" content="Speech-ka"/>
-<meta property="og:type" content="website"/>
-<meta property="og:url" content="https://speech-ka.com/"/>
-<meta property="og:description" content="Место для свободного общения"/>
-<meta property="og:image" content="https://speech-ka.com/img/speech-ka.jpg"/>
+<!-- Open Graph Generated: a.pr-cy.ru -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Спичка">
+<meta property="og:description" content="Место для свободного общения">
+<meta property="og:url" content="https://speech-ka.com">
+<meta property="og:image" content="https://speech-ka.com/img/speech-ka.jpg">
+<meta property="og:site_name" content="Speech-ka">
+<meta property="og:locale" content="ru_RU">
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-GTYQ7XC9V9"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-GTYQ7XC9V9');
+</script>

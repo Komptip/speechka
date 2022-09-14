@@ -13,6 +13,11 @@ use App\Models\PostElements;
 use App\Models\ElementData;
 use App\Models\Rating;
 
+use App\Models\Communities;
+use App\Models\CommunityPosts;
+use App\Models\CommunityAdmins;
+use App\Models\CommunityBlacklist;
+
 use DOMDocument;
 
 use App\Http\Controllers\AuthController;
@@ -76,10 +81,12 @@ class PostController extends Controller
 
         $validate = Validator::make($request->json()->all(), [
             'title' => 'present|string|min:0|max:120',
+            'community_id' => 'required'
         ],[
             'title.string' => 'Заголовок должен быть строкой',
             'title.min' => 'Заголовок слишком короткий',
-            'title-max' => 'Заголовок слишком длинный'
+            'title-max' => 'Заголовок слишком длинный',
+            'community_id.required' => 'ID подсайта не получен',
         ]);
 
         if($validate->fails()){
@@ -97,12 +104,62 @@ class PostController extends Controller
             return $validateResult;
         }
 
+        if($data['community_id'] === false){
+            $community = false;
+        } else {
+             $validate = Validator::make(['community_id' => $data['community_id']], [
+                'community_id' => 'integer|min:1',
+            ],[
+                'community_id.integer' => 'ID подсайта должен быть числом',
+                'community_id.min' => 'ID некорректен',
+            ]);
+
+             if($validate->fails()){
+                return [
+                    'action' => 'error',
+                    'data' => $validate->errors()->first()
+                ];
+            }
+
+            $community = Communities::where(['id' => $data['community_id'], 'active' => 1])->first();
+
+            if($community === null){
+                return [
+                    'action' => 'error',
+                    'data' => 'Подсайт не найден'
+                ];
+            }
+
+            if($community->mode == 1){
+                if(CommunityAdmins::where(['community_id' => $community->id, 'user_id' => $user->id])->first() === null){
+                    return [
+                        'action' => 'error',
+                        'data' => 'В этом подсайте разрешено писать только администраторам'
+                    ];       
+                }
+            }
+
+            if(CommunityBlacklist::where(['user_id' => $user->id, 'community_id' => $community->id])->first() != null){
+                return [
+                    'action' => 'error',
+                    'data' => 'Вы в черном списке этого подсайта'
+                ];
+            }
+        }
+
         $newPost = new Posts();
         $newPost->user_id = $user->id;
         $newPost->created_at = time();
         $newPost->title = $data['title'];
         $newPost->active = 1;
         $newPost->save();
+
+        if($community){
+            $toCommunity = new CommunityPosts();
+            $toCommunity->post_id = $newPost->id;
+            $toCommunity->community_id = $community->id;
+            $toCommunity->save();
+        }
 
         foreach($request->json()->all()['data'] as $element){
             $newElement = new PostElements();
@@ -406,10 +463,10 @@ class PostController extends Controller
                             ];
                         }
 
-                        if(strlen($subvalue) > 250){
+                        if(strlen($subvalue) > 5000){
                             return [
                                 'action' => 'error',
-                                'data' => 'Текст и/или атрибут одного из элементов привышает 250 символов'
+                                'data' => 'Текст и/или атрибут одного из элементов привышает 5000 символов'
                             ];
                         }
 
@@ -494,13 +551,33 @@ class PostController extends Controller
 
         $data = $request->all();
 
-        $post = Posts::Where(['id' => $data['post_id'], 'user_id' => $user->id])->first();
+        $post = Posts::Where(['id' => $data['post_id']])->first();
 
         if($post === null){
             return [
                 'action' => 'error',
                 'data' => 'Пост не найден'
             ];
+        }
+
+        if($post->author_id !== $user->id){
+
+            $postCommunity = CommunityPosts::where(['post_id' => $post->id])->first();
+
+            if($postCommunity === null){
+                return [
+                    'action' => 'error',
+                    'data' => 'Пост не найден'
+                ];
+            }
+
+            if(CommunityAdmins::where(['community_id' => $postCommunity->community_id, 'user_id' => $user->id])->first() === null){
+                return [
+                    'action' => 'error',
+                    'data' => 'Пост не найден'
+                ];
+            }
+        
         }
 
         $post->active = 0;
@@ -539,13 +616,33 @@ class PostController extends Controller
 
         $data = $request->all();
 
-        $post = Posts::Where(['id' => $data['post_id'], 'user_id' => $user->id])->first();
+        $post = Posts::Where(['id' => $data['post_id']])->first();
 
         if($post === null){
             return [
                 'action' => 'error',
                 'data' => 'Пост не найден'
             ];
+        }
+
+        if($post->author_id !== $user->id){
+
+            $postCommunity = CommunityPosts::where(['post_id' => $post->id])->first();
+
+            if($postCommunity === null){
+                return [
+                    'action' => 'error',
+                    'data' => 'Пост не найден'
+                ];
+            }
+
+            if(CommunityAdmins::where(['community_id' => $postCommunity->id, 'user_id' => $user->id])->first() === null){
+                return [
+                    'action' => 'error',
+                    'data' => 'Пост не найден'
+                ];
+            }
+        
         }
 
         $post->active = 1;
@@ -663,6 +760,14 @@ class PostController extends Controller
 
             $postToSend['edited'] = $post->edited;
 
+            $postCommunity = CommunityPosts::where(['post_id' => $post->id])->first();
+
+            if($postCommunity === null){
+                $postToSend['community_id'] = false;
+            } else {
+                $postToSend['community_id'] = $postCommunity->community_id;
+            }
+
             array_push($postsToSend, $postToSend);
 
         });
@@ -776,6 +881,42 @@ class PostController extends Controller
             return Posts::where('id', '<', min($data['black-list']))->latest()->where(['user_id' => $data['user_id']])->where('active', 1)->take(5)->pluck('id')->toArray();
         } else {
             return Posts::latest()->where(['user_id' => $data['user_id']])->where('active', 1)->take(5)->pluck('id')->toArray();
+        }
+    }
+
+    public function getPostsByCommunity(Request $request){
+        $validate = Validator::make($request->all(), [
+            'community_id' => 'required|integer',
+            'black-list' => 'array|max:500',
+            'black-list.*' => 'required|integer|min:1',
+        ],[
+            'community_id.required' => 'ID не получен',
+            'community_id.integer' => 'ID должен быть числом',
+            'black-list.array' => 'Черный список должны быть массивом',
+            'black-list.max' => 'Черный список не должен привышать 500',
+            'black-list.max' => 'Доступно не более 10 ID',
+            'black-list.*.required' => 'ID не получен',
+            'black-list.*.integer' => 'ID должен быть числом',
+            'black-list.*.min' => 'ID не может быть меньше 1'
+        ]);
+
+        if($validate->fails()){
+            return [
+                'action' => 'error',
+                'data' => $validate->errors()->first()
+            ];
+        }  
+
+        $data = $request->all();
+
+        if(isset($data['black-list'])){
+            return Posts::leftJoin('community_posts', function($join) use($data){
+                $join->on('community_posts.post_id', '=', 'posts.id')->where('community_posts.community_id' , '=', $data['community_id']);
+            })->whereNotNull('community_posts.id')->latest()->where('posts.id', '<', min($data['black-list']))->where('posts.active', 1)->take(5)->pluck('posts.id')->toArray();
+        } else {
+            return Posts::leftJoin('community_posts', function($join) use($data){
+                $join->on('community_posts.post_id', '=', 'posts.id')->where('community_posts.community_id' , '=', $data['community_id']);
+            })->whereNotNull('community_posts.id')->latest()->where('active', 1)->take(5)->pluck('posts.id')->toArray();
         }
     }
 

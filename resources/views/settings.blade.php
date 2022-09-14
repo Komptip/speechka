@@ -9,6 +9,7 @@
 			</div>
 			<input type="file" class="file-uploader" accept=".jpeg,.png,.bmp,.jpg,.gif,.webp,.avif,.svg" v-on:change="onUploadPhoto">
 			<button class="upload-photo" type="button" v-on:click="uploadPhoto">Загрузить</button>
+			<button :class="settingsIsLoading ? 'noactive' : ''" v-on:click="saveSettings">Сохранить</button>
 			<p class="sub-headline">Смена пароля</p>
 			<input placeholder="Новый пароль" name="new_password" type="password" minlength="6"  maxlength="30">
 			<input placeholder="Старый пароль" name="old_password" type="password" minlength="6"  maxlength="30">

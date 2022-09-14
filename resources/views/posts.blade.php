@@ -1,13 +1,14 @@
 <template v-for="post in posts">
 	<div class="post" v-if="!post.hidden && post['id'] != postViewID">
 		<div class="meta">
-			<a v-if="post['active']" :href="'/u/' + post['author_id']" class="icon" :style="'background-image: url(' + users[post['author_id']]['picture'] + ')'">
+			<a v-if="post['active']" :href="[post['community_id'] ? ('/c/' + post['community_id']) : ('/u/' + post['author_id'])]" class="icon" :style="'background-image: url(' + (post['community_id'] && !currentCommunity ? communities[post['community_id']]['picture'] : users[post['author_id']]['picture']) + ')'">
 				
 			</a>
 			<div class="icon" v-if="!post['active']" style="background-image: url(/img/removed.webp);">
 							
 			</div>
-			<a v-if="post['active']" class="author" :href="'/u/' + post['author_id']">@{{ users[post['author_id']]['name'] }}</a>
+			<a class="author" :href="'/c/' + post['community_id']" v-if="post['community_id'] && !currentCommunity">@{{ communities[post['community_id']]['name'] }}</a>
+			<a v-if="post['active']" :class="['author', post['community_id'] && !currentCommunity ? 'with-community' : '']" :href="'/u/' + post['author_id']">@{{ users[post['author_id']]['name'] }}</a>
 			<p v-if="post['active']" class="timestamp">@{{ formatTime(post['created_at']) }}</p>
 			<template v-if="user.moderator">
 				<img v-if="post['active']" src="/img/ban.svg" class="ban" v-on:click="removePosts(post['id'])"/>
@@ -18,8 +19,8 @@
 				<div v-if="post.showMore" class="list">
 					<p v-on:click="hidePost(post)">Скрыть</p>
 					<p v-if="post.author_id === user.id" v-on:click="editPost(post)">Редактировать</p>
-					<p v-if="post.author_id === user.id && post['active'] == 1" v-on:click="deletePost(post)">Удалить</p>
-					<p v-if="post.author_id === user.id && post['active'] == 0" v-on:click="republishPost(post)">Восстановить</p>
+					<p v-if="(post.author_id === user.id || adminInCommunities.includes(post['community_id'])) && post['active'] == 1" v-on:click="deletePost(post)">Удалить</p>
+					<p v-if="(post.author_id === user.id || adminInCommunities.includes(post['community_id'])) && post['active'] == 0" v-on:click="republishPost(post)">Восстановить</p>
 				</div>
 			</div>
 		</div>

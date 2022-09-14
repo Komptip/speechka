@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\DB;
 
 use App\Http\Controllers\AuthController;
 
+use App\Models\Communities;
+
 class ModerationController extends Controller
 {
     public function removeComment(Request $request){
@@ -314,6 +316,104 @@ class ModerationController extends Controller
         return [
             'action' => 'success',
             'data' => 'Пост успешно восстановлен'
+        ];
+    }
+
+    public function banCommunity(Request $request){
+        $user = AuthController::isUserAuth($request);
+        if($user === false){
+            return [
+                'action' => 'error',
+                'data' => 'Действие запрещенно'
+            ];
+        }
+
+         $validate = Validator::make($request->all(), [
+            'entity_id' => 'required|integer|min:1'
+        ],[
+            'entity_id.required' => 'ID не получен',
+            'entity_id.integer' => 'ID должен быть числом',
+            'entity_id.min' => 'ID Некорректнен'
+        ]);
+
+        if($validate->fails()){
+            return [
+                'action' => 'error',
+                'data' => $validate->errors()->first()
+            ];
+        }
+
+        if($user['moderator'] == 0){
+            return [
+                'action' => 'error',
+                'data' => 'У вас нет прав на это действие'
+            ];
+        }
+
+        $community = Communities::where(['id' => $request->entity_id])->first();
+
+        if($community === null){
+            return [
+                'action' => 'error',
+                'data' => 'Пост не найден'
+            ];
+        }
+
+        $community->active = 0;
+        $community->save();
+
+        return [
+            'action' => 'success',
+            'data' => 'Подсайт успешно удален'
+        ];
+    }
+
+    public function unbanCommunity(Request $request){
+        $user = AuthController::isUserAuth($request);
+        if($user === false){
+            return [
+                'action' => 'error',
+                'data' => 'Действие запрещенно'
+            ];
+        }
+
+         $validate = Validator::make($request->all(), [
+            'entity_id' => 'required|integer|min:1'
+        ],[
+            'entity_id.required' => 'ID не получен',
+            'entity_id.integer' => 'ID должен быть числом',
+            'entity_id.min' => 'ID Некорректнен'
+        ]);
+
+        if($validate->fails()){
+            return [
+                'action' => 'error',
+                'data' => $validate->errors()->first()
+            ];
+        }
+
+        if($user['moderator'] == 0){
+            return [
+                'action' => 'error',
+                'data' => 'У вас нет прав на это действие'
+            ];
+        }
+
+        $community = Communities::where(['id' => $request->entity_id])->first();
+
+        if($community === null){
+            return [
+                'action' => 'error',
+                'data' => 'Пост не найден'
+            ];
+        }
+
+        $community->active = 1;
+        $community->save();
+
+        return [
+            'action' => 'success',
+            'data' => 'Подсайт успешно восстановлен'
         ];
     }
 }
