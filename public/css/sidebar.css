@@ -1,11 +1,9 @@
 .sidebar {
-<<<<<<< HEAD
 	width: 200px;
 	height: 100%;
-=======
 	min-width: 220px;
 	height: calc(100vh - 60px);
->>>>>>> 06ee5eb (Communities added)
+
 
 	background-color: #F2F2F2;
 	overflow-x: all;
@@ -102,7 +100,6 @@
 	align-items: center;
 }
 
-<<<<<<< HEAD
 @media only screen and (max-width: 980px) {
 	.sidebar {
 		position: static;
@@ -192,7 +189,7 @@
 
 .sidebar .view-all p {
 	margin-left: 10px;
->>>>>>> 06ee5eb (Communities added)
+
 }
 
 @media only screen and (max-width: 980px) {
