@@ -58,12 +58,6 @@ class CommunityController extends Controller
             $token = Str::random(50);
             $filename = $token . '.' . $request->photo->extension();
 
-            if($user->picture !== null){
-                if(file_exists(public_path($user->picture))){
-                    unlink(public_path($user->picture));
-                }
-            }
-
             $request->photo->move(public_path('uploaded/images'), $filename);
 
             $newCommunity->picture = '/uploaded/images/' . $filename;
