@@ -81,7 +81,7 @@ class SettingController extends Controller
                 }
             }
 
-            $request->picture->move(public_path('uploaded/images'), $filename);
+            $request->photo->move(public_path('uploaded/images'), $filename);
 
             $user->picture = '/uploaded/images/' . $filename;
             $user->save();
