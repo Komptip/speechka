@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('popular');
+    return view('new');
 });
 
 Route::get('/new', function () {
