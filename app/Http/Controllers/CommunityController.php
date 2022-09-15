@@ -88,12 +88,11 @@ class CommunityController extends Controller
         $user = AuthController::isUserAuth($request);
 
         $validate = Validator::make($request->all(), [
-            'ids' => 'required|array|max:200',
+            'ids' => 'required|array',
             'ids.*' => 'required|integer'
         ],[
             'ids.required' => 'ID не получены',
             'ids.array' => 'ID должны быть массивом',
-            'ids.max' => 'Доступно не более 200 ID',
             'ids.*.required' => 'ID не получен',
             'ids.*.integer' => 'ID должен быть числом'
         ]);
