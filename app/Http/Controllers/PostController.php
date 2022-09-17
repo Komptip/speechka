@@ -20,8 +20,6 @@ use App\Models\CommunityBlacklist;
 
 use DOMDocument;
 
-use App\Http\Controllers\AuthController;
-
 class PostController extends Controller
 {
 
@@ -95,6 +93,24 @@ class PostController extends Controller
                 'data' => $validate->errors()->first()
             ];
         } 
+
+        $lastPost = Posts::where(['user_id' => $user->id])->orderBy('created_at', 'desc')->first();
+
+        $usrRating = UserController::getRating($user->id);
+
+        if($usrRating < 0){
+            if($lastPost !== null){
+                $lastPostPublished = time() - $lastPost->created_at;
+                $limitForNewPost = abs($usrRating) * (60 * 5);
+
+                if($lastPostPublished <= $limitForNewPost){
+                    return [
+                        'action' => 'error',
+                        'data' => 'Из-за вашего рейтинга вы не можете публиковать новые посты ещё ' . ($limitForNewPost - $lastPostPublished) . ' секунд'
+                    ];
+                }
+            }
+        }
 
         $data = $request->json()->all();
 

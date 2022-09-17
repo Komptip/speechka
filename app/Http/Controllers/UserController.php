@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+use DB;
 use App\Models\Users;
 use Illuminate\Support\Facades\Validator;
 
@@ -71,5 +72,31 @@ class UserController extends Controller
 
         return $usersToSend;
 
+    }
+
+    function getRating($id){
+        $postRating = DB::select('
+            SELECT users.id, SUM(IF(ratings.value=0, -1, IF(ratings.value=1, 1, 0))) AS rating
+            FROM users LEFT JOIN posts
+                ON users.id = posts.user_id
+            LEFT JOIN ratings
+                ON posts.id = ratings.entity_id AND ratings.type = 0
+            WHERE users.id = ?
+            GROUP BY users.id
+            ORDER BY rating
+            ', [$id])[0]->rating;
+
+        $commentRating = DB::select('
+            SELECT users.id, SUM(IF(ratings.value=0, -1, IF(ratings.value=1, 1, 0))) AS rating
+            FROM users LEFT JOIN comments
+                ON users.id = comments.user_id
+            LEFT JOIN ratings
+                ON comments.id = ratings.entity_id AND ratings.type = 1
+            WHERE users.id = ?
+            GROUP BY users.id
+            ORDER BY rating
+            ', [$id])[0]->rating;
+
+        return $postRating + $commentRating;
     }
 }

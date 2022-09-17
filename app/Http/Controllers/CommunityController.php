@@ -45,6 +45,13 @@ class CommunityController extends Controller
             ];
         }
 
+        if(UserController::getRating($user->id) < 1){
+            return [
+                'action' => 'error',
+                'data' => 'Что-бы создавать новые подсайты ваш рейтинг должен быть больше нуля'
+            ];
+        }
+
         $data = $request->all();
 
         $newCommunity = new Communities();
