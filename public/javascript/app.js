@@ -209,35 +209,40 @@ var app = Vue.createApp(
 				});
 			},
 			parseURL: function(url){
-				setTimeout(function(){
-					twttr.widgets.load();
-				}, 100);
-				if(!url.startsWith('http://') && !url.startsWith('https://')){
-					url = 'https://' + url;
-				}
-				let link = new URL(url);
+				try{
+					setTimeout(function(){
+						twttr.widgets.load();
+					}, 100);
+					if(!url.startsWith('http://') && !url.startsWith('https://')){
+						url = 'https://' + url;
+					}
+					let link = new URL(url);
 
-				if(link.hostname === 'www.youtube.com' || link.hostname === 'youtube.com' || link.hostname === 'youtu.be' || link.hostname === 'www.youtu.be'){
-					let regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-				    let match = url.match(regExp);
+					if(link.hostname === 'www.youtube.com' || link.hostname === 'youtube.com' || link.hostname === 'youtu.be' || link.hostname === 'www.youtu.be'){
+						let regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+					    let match = url.match(regExp);
 
-				    if (match && match[2].length == 11) {
-				        return {'type': 'youtube', 'key': match[2]};
-				    } else {
-				        return false;
-				    }
-				}
+					    if (match && match[2].length == 11) {
+					        return {'type': 'youtube', 'key': match[2]};
+					    } else {
+					        return false;
+					    }
+					}
 
-				else if (link.hostname === 't.me' || link.hostname === 'www.t.me'){
-					let linkParts = url.split('/');
-					return {'type': 'telegram', 'url': linkParts.at(-2) + '/' + linkParts.at(-1).split('?')[0]};
-				}
+					else if (link.hostname === 't.me' || link.hostname === 'www.t.me'){
+						let linkParts = url.split('/');
+						return {'type': 'telegram', 'url': linkParts.at(-2) + '/' + linkParts.at(-1).split('?')[0]};
+					}
 
-				else if(link.hostname === 'www.twitter.com' || link.hostname === 'twitter.com'){
-					return {'type': 'twitter'};
-				}
+					else if(link.hostname === 'www.twitter.com' || link.hostname === 'twitter.com'){
+						return {'type': 'twitter'};
+					}
 
-				else {
+					else {
+						return {'type': 'none'};
+					}
+				} catch(e) {
+					console.error(e);
 					return {'type': 'none'};
 				}
 			},
