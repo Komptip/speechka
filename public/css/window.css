@@ -203,10 +203,11 @@
 	background-size: 50%;
 	background-repeat: no-repeat;
 	cursor: pointer;
+	box-shadow: inset 8px 8px 24px -21px rgba(66, 68, 90, 1);
 }
 
 .window .box .community-photo:hover {
-	box-shadow: inset 8px 8px 24px -21px rgba(66, 68, 90, 1);
+	box-shadow: inset 8px 8px 24px -21px rgba(16, 18, 90, 1);
 }
 
 .window .box .list {

@@ -26,19 +26,16 @@
 					<p class="username">
 						@{{ communities[currentCommunity].name }}
 
-					<template v-if="user.moderator">
+						<template v-if="user.moderator">
 							<img src="/img/ban.svg" v-if="communities[currentCommunity].active == 1" class="ban" v-on:click="deleteCommunity(currentCommunity)"/>
 							<img src="/img/unban.svg" v-else class="ban" v-on:click="undeleteCommunity(currentCommunity)"/>
 						</template>
 					</p>
 					<p class="signup-time">@{{ communities[currentCommunity].description }}</p>
-					<div class="bottom" v-if="communities[currentCommunity].mode == 0">
-						<a class="new-post" :href="'/post/new?community_id=' + currentCommunity">Написать пост</a>
-						<div class="open-settings" v-if="adminInCommunities.includes(currentCommunity)" v-on:click="showCommunitySettings"></div>
-					</div>
-					<div class="bottom" v-else>
-						<p>В этом сообществе могут писать только его администраторы</p>
-						<div class="open-settings" v-if="adminInCommunities.includes(currentCommunity)" v-on:click="showCommunitySettings"></div>
+					<div class="bottom">
+						<a class="new-post" :href="'/post/new?community_id=' + currentCommunity" v-if="communities[currentCommunity].mode == 0">Написать пост</a>
+						<p v-else>В этом сообществе могут писать только его администраторы</p>
+						<div class="open-settings" v-if="adminInCommunities.includes(currentCommunity)" v-on:click="showCommunitySettings">Настроить</div>
 					</div>
 				</div>
 

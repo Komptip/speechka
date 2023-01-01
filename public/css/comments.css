@@ -156,6 +156,52 @@
 	cursor: pointer;
 }
 
+.comment .bottom .more {
+	margin-left: 10px;
+	display: flex;
+	justify-content: center;
+}
+
+.comment .bottom .more .btn {
+	max-width: 24px;
+	cursor: pointer;
+}
+
+.comment .bottom .more .list {
+	width: 220px;
+	position: absolute;
+	margin-top: 20px;
+	background-color: white;
+
+	border-radius: 8px;
+	box-shadow: 0px 0px 32px -20px rgba(66, 68, 90,1);
+
+	display: flex;
+	flex-direction: column;
+
+	font-size: 15px;
+
+	box-sizing: border-box;
+
+	padding: 5px;
+
+	z-index: 1000;
+}
+
+.comment .bottom .more .list p {
+	padding-left: 10px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	border-radius: 4px;
+
+	margin: 0;
+	cursor: pointer;
+}
+
+.comment .bottom .more .list p:hover {
+	background-color: rgba(0, 0, 0, 0.02);
+}
+
 .sub-comments {
 	display: flex;
 }

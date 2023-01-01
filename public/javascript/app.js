@@ -31,7 +31,8 @@ var app = Vue.createApp(
 				newPostCommunity: {
 					communitiesToShow: [],
 					searchFilter: '',
-					listHidden: true
+					listHidden: true,
+					selected: 0
 				},
 				communitiesLoaed: false,
 				communityWindow: false,
@@ -145,8 +146,6 @@ var app = Vue.createApp(
 									'id': communityID
 								});
 							});
-						} else {
-							app.newPostCommunity.selected = 0;
 						}
 
 						app.communitiesLoaed = true;
@@ -1222,6 +1221,7 @@ var app = Vue.createApp(
 						 		if(comment['sub_comments']){
 						 			comment['sub_comments']['opened'] = true;
 						 		}
+						 		comment['more'] = false;
 						 		comment['rating_value'] = app.countRating(comment['rating']);
 
 								app.comments[comment['id']] = comment;
@@ -1689,6 +1689,13 @@ var app = Vue.createApp(
 			</div>
 			<div class="bottom">
 				<p class="reply" v-on:click="app.reply(id)">Ответить</p>
+				<div class="more">
+					<img src="/img/more.svg" class="btn" v-on:click="app.comments[id]['more'] = !app.comments[id]['more']">
+					<div v-if="app.comments[id]['more']" class="list">
+						<p>Копировать ссылку</p>
+						<p>Скрыть</p>
+					</div>
+				</div>
 			</div>
 		</div>
 		<sub-comments :app="app" :id="id"></sub-comments>

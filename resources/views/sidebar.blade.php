@@ -11,7 +11,7 @@
 	</div>
 	<div class="communities" v-if="sideCommunitiesOrder">
 		<p class="title">Подсайты</p>
-		<a v-for="communityID in (sideCommunitiesOrder.length > communitiesListLimit ? (viewAllCommunities ? sideCommunitiesOrder : sideCommunitiesOrder.slice(0, communitiesListLimit)) : sideCommunitiesOrder)" class="button" :href="'/c/' + communityID">
+		<a v-for="communityID in (sideCommunitiesOrder.length > communitiesListLimit ? (viewAllCommunities ? sideCommunitiesOrder : sideCommunitiesOrder.slice(0, communitiesListLimit)) : sideCommunitiesOrder)" :class="['button', communityID == currentCommunity ? 'active' : '']" :href="'/c/' + communityID">
 			<div class="icon" :style="'background-image: url(' + communities[communityID].picture + ');'">
 				
 			</div>
