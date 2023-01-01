@@ -22,6 +22,8 @@ use App\Models\UserAuthTokens;
 use App\Mail\PasswordResetMail;
 use App\Mail\RegistrationConfirmMail;
 
+use App\Http\Controllers\UserController;
+
 class AuthController extends Controller
 {
     public function SignUp(Request $request){
@@ -294,6 +296,10 @@ class AuthController extends Controller
                             ', [$user->id, time()]);
 
         if(isset($ban[0])){
+            return true;
+        }
+
+        if(UserController::getRating($user->id) < -15){
             return true;
         }
 

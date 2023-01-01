@@ -56,6 +56,24 @@ class CommentController extends Controller
             ];
         }
 
+        $lastComment = Comments::where(['user_id' => $user->id])->orderBy('created_at', 'desc')->first();
+
+        $usrRating = UserController::getRating($user->id);
+
+        if($usrRating < 0){
+            if($lastComment !== null){
+                $lastCommentPublished = time() - $lastComment->created_at;
+                $limitForNewComment = abs($usrRating) * (60 * 5);
+
+                if($lastCommentPublished <= $limitForNewComment){
+                    return [
+                        'action' => 'error',
+                        'data' => 'Из-за вашего рейтинга вы не можете публиковать новые комментарии ещё ' . ($limitForNewComment - $lastCommentPublished) . ' секунд'
+                    ];
+                }
+            }
+        }
+
         $orlovTriggered = OrlovController::detectTrigger($data['text']);
 
         if(isset($data['reply-id'])){

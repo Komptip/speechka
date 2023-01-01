@@ -23,13 +23,14 @@
 				
 				<div class="post large">
 					<div class="meta">
-						<a v-if="posts[0]['active']" :href="'/u/' + posts[0]['author_id']" class="icon" :style="'background-image: url(' + users[posts[0]['author_id']]['picture'] + ')'">
+						<a v-if="posts[0]['active']" :href="[posts[0]['community_id'] ? ('/c/' + posts[0]['community_id']) : ('/u/' + posts[0]['author_id'])]" class="icon" :style="'background-image: url(' + (posts[0]['community_id'] && !currentCommunity ? communities[posts[0]['community_id']]['picture'] : users[posts[0]['author_id']]['picture']) + ')'">
 				
 						</a>
 						<div class="icon" v-if="!posts[0]['active']" style="background-image: url(/img/removed.webp);">
 							
 						</div>
-						<a v-if="posts[0]['active']" class="author" :href="'/u/' + posts[0]['author_id']">@{{ users[posts[0]['author_id']]['name'] }}</a>
+						<a class="author" :href="'/c/' + posts[0]['community_id']" v-if="posts[0]['community_id'] && !currentCommunity">@{{ communities[posts[0]['community_id']]['name'] }}</a>
+						<a v-if="posts[0]['active']" :class="['author', posts[0]['community_id'] && !currentCommunity ? 'with-community' : '']" :href="'/u/' + posts[0]['author_id']">@{{ users[posts[0]['author_id']]['name'] }}</a>
 						<p v-if="posts[0]['active']" class="timestamp">@{{ formatTime(posts[0]['created_at']) }}</p><!--  -->
 						<template v-if="user.moderator">
 							<img v-if="posts[0]['active']" src="/img/ban.svg" class="ban" v-on:click="removePosts(posts[0]['id'])"/>
@@ -144,6 +145,7 @@
 			
 		</div>
 		@include('authwindows')
+		@include('communitywindows')
 		@include('settings')
 		@include('messages')
 		<script type="text/javascript" src="/javascript/app.js"></script>

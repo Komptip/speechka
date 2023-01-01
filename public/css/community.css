@@ -1,0 +1,26 @@
+.open-settings {
+	width: 65px;
+	height: 65px;
+
+	border: 3px solid black;
+
+	cursor: pointer;
+
+	margin: auto auto;
+	margin-right: 5px;
+
+	border-radius: 8px;
+
+	background-image: url(/img/settings.svg);
+	background-size: 65%;
+	background-repeat: no-repeat;
+	background-position: center;
+
+	box-shadow: 0px -1px 24px -16px rgba(66, 68, 90, 1);
+
+	box-sizing: border-box;
+}
+
+.open-settings:hover {
+	background-color: #F2F2F2;
+}

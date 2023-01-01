@@ -38,4 +38,10 @@ const editor = new EditorJS({
       insertDataToEditor();
     }
    }
-})
+});
+
+var newpost = true;
+
+if(typeof app !== 'undefined'){
+  app.hideNewPostButton = true;
+}
