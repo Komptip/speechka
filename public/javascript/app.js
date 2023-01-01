@@ -27,6 +27,17 @@ var app = Vue.createApp(
 				sideCommentsPostsTitles: false,
 				postForEdit: false,
 				feedType: false,
+				newCommunityPhotoPreview: false,
+				newPostCommunity: {
+					communitiesToShow: [],
+					searchFilter: '',
+					listHidden: true
+				},
+				communitiesLoaed: false,
+				communityWindow: false,
+				communities: [],
+				communitiesSettings: {},
+				communitySettingsOpened: false,
 				commentsreplies: {
 					'start': {
 						'attachment': false,
@@ -118,20 +129,25 @@ var app = Vue.createApp(
 						let getparams = {}
 						location.search.substr(1).split("&").forEach(function(item) {getparams[item.split("=")[0]] = item.split("=")[1]})
 
-						Object.keys(loadedCommunities).forEach(function(communityID){
+						if(loadedCommunities.action !== 'error'){
 
-							if(getparams.community_id !== undefined){
-								if(getparams.community_id === communityID){
-									app.newPostCommunity.selected = app.newPostCommunity.communitiesToShow.length;
+							Object.keys(loadedCommunities).forEach(function(communityID){
+
+								if(getparams.community_id !== undefined){
+									if(getparams.community_id === communityID){
+										app.newPostCommunity.selected = app.newPostCommunity.communitiesToShow.length;
+									}
 								}
-							}
 
-							app.newPostCommunity.communitiesToShow.push({
-								'name': loadedCommunities[communityID].name,
-								'picture': loadedCommunities[communityID].picture,
-								'id': communityID
+								app.newPostCommunity.communitiesToShow.push({
+									'name': loadedCommunities[communityID].name,
+									'picture': loadedCommunities[communityID].picture,
+									'id': communityID
+								});
 							});
-						});
+						} else {
+							app.newPostCommunity.selected = 0;
+						}
 
 						app.communitiesLoaed = true;
 
@@ -180,11 +196,14 @@ var app = Vue.createApp(
 
 					let request = app.getCommunitiesByID(data);
 
+
 					Promise.all([request]).then((results) => {
-					 	
-						Object.keys(results[0]).forEach(function(id){
-							app.communities[id] = results[0][id];
-						});
+				
+						if(results.action !== 'error'){ 	
+							Object.keys(results[0]).forEach(function(id){
+								app.communities[id] = results[0][id];
+							});
+						}
 
 					});	
 				});
@@ -1157,9 +1176,11 @@ var app = Vue.createApp(
 					});
 
 					let communities = results[1];
-				 	Object.keys(communities).forEach(function(communityID){
-						app.communities[communityID] = communities[communityID];
-					});
+					if(communities.action !== 'error'){
+					 	Object.keys(communities).forEach(function(communityID){
+							app.communities[communityID] = communities[communityID];
+						});
+					}
 
 					data.forEach(function(post){
 						post.ratingValue = app.countRating(post['rating']);
@@ -1178,40 +1199,44 @@ var app = Vue.createApp(
 
 				let usersIds = [];
 
-				data.forEach(function(comment){
-					usersIds = usersIds.concat(Object.keys(comment['rating']));
-					usersIds.push(comment.author_id);
-				});
+				if(data.action !== 'error'){
 
-				usersIds = [...new Set(usersIds)];
 
-				let request = app.getUsersByID(usersIds);
-
-				Promise.all([request]).then((results) => {
-				 	let users = results[0];
-				 	Object.keys(users).forEach(function(userID){
-						app.users[userID] = users[userID];
+					data.forEach(function(comment){
+						usersIds = usersIds.concat(Object.keys(comment['rating']));
+						usersIds.push(comment.author_id);
 					});
 
-				 	data.forEach(function(comment){
-				 		if(!sideComments){
-					 		if(comment['sub_comments']){
-					 			comment['sub_comments']['opened'] = true;
+					usersIds = [...new Set(usersIds)];
+
+					let request = app.getUsersByID(usersIds);
+
+					Promise.all([request]).then((results) => {
+					 	let users = results[0];
+					 	Object.keys(users).forEach(function(userID){
+							app.users[userID] = users[userID];
+						});
+
+					 	data.forEach(function(comment){
+					 		if(!sideComments){
+						 		if(comment['sub_comments']){
+						 			comment['sub_comments']['opened'] = true;
+						 		}
+						 		comment['rating_value'] = app.countRating(comment['rating']);
+
+								app.comments[comment['id']] = comment;
+					 		} else {
+					 			if(!app.sComments){
+					 				app.sComments = [];
+					 			}
+
+					 			app.sComments[comment['id']] = comment;
 					 		}
-					 		comment['rating_value'] = app.countRating(comment['rating']);
+						});
 
-							app.comments[comment['id']] = comment;
-				 		} else {
-				 			if(!app.sComments){
-				 				app.sComments = [];
-				 			}
-
-				 			app.sComments[comment['id']] = comment;
-				 		}
-					});
-
-					app.commentsIsLoading = false;
-				 });
+						app.commentsIsLoading = false;
+					 });
+				}
 			},
 			refreshRating: function(post){
 				let formData = new FormData();

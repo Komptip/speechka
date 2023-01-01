@@ -28,23 +28,26 @@ function beforeMountSidecomments(){
 
 			let formData = new FormData();
 
-			data.forEach(function(value){
-				formData.append('ids[]', value.post_id);
-			});
+			if(data.action !== 'error'){
 
-			fetch('/data/post/get-titles-by-ids', {
-				method: 'POST',
-				body: formData,
-				headers: {'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')},
-			})
-			.then((response) => {
-				return response.json();
-			})
-			.then((data) => {
+				data.forEach(function(value){
+					formData.append('ids[]', value.post_id);
+				});
 
-				app.sideCommentsPostsTitles = data;
+				fetch('/data/post/get-titles-by-ids', {
+					method: 'POST',
+					body: formData,
+					headers: {'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')},
+				})
+				.then((response) => {
+					return response.json();
+				})
+				.then((data) => {
 
-			});
+					app.sideCommentsPostsTitles = data;
+
+				});
+			}
 		});
 
 	});

@@ -184,7 +184,7 @@ class OrlovController extends Controller
         'Как перестать удивляться высокомерности глупых людей, которые считают себя умнее всех???'
     ];
 
-    public function detectTrigger($text){
+    public static function detectTrigger($text){
         $textToSearch = mb_strtolower($text);
 
         foreach (self::$singleTriggerWords as $triggerWord) {
@@ -202,7 +202,7 @@ class OrlovController extends Controller
         return false;       
     }
 
-    public function getResponse(){
+    public static function getResponse(){
         return self::$responses[array_rand(self::$responses)];
     }
 }

@@ -290,7 +290,7 @@ class AuthController extends Controller
         return $user;
     }
 
-    public function isUserBanned($user){
+    public static function isUserBanned($user){
         $ban = $postRating = DB::select('
                             SELECT * FROM bans WHERE user_id = ? AND (up_to > ? OR up_to IS NULL)
                             ', [$user->id, time()]);

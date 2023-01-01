@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 class TimeController extends Controller
 {
-    public function months(){
+    public static function months(){
         return ['янв', 'фев', 'мар', 'апр', 'мая', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
     }
 }

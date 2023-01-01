@@ -13,8 +13,16 @@ body {
 	font-family: Roboto;
 }
 
-a {
+a:not(.hidden) {
 	color: #3766a9;
+}
+
+.hidden {
+	text-decoration: none;
+}
+
+.hidden:visited {
+	color: black;
 }
 
 .content {

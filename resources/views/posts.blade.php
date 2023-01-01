@@ -25,7 +25,7 @@
 			</div>
 		</div>
 		<div class="post-content" v-on:click="viewPost(post)">
-			<h1 class="title" v-if="post['title'] !== null > 0">@{{ post['title'] }}</h1>
+			<h1 class="title" v-if="post['title'] !== null > 0"><a class="hidden" :href="'/p/' + post['id']">@{{ post['title'] }}</a></h1>
 			<template v-for="element in post['elements']">
 				<h2 class="sub-title" v-if="element['type'] == 'header'" v-html="element['data']['text']"></h2>
 				<p class="text" v-if="element['type'] == 'paragraph'" v-html="element['data']['text']"></p>
