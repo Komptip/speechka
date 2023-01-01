@@ -74,7 +74,7 @@ class UserController extends Controller
 
     }
 
-    function getRating($id){
+    public static function getRating($id){
         $postRating = DB::select('
             SELECT users.id, SUM(IF(ratings.value=0, -1, IF(ratings.value=1, 1, 0))) AS rating
             FROM users LEFT JOIN posts

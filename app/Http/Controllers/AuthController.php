@@ -269,7 +269,7 @@ class AuthController extends Controller
         return $response;
     }
 
-    public function isUserAuth(Request $request){
+    public static function isUserAuth(Request $request){
         $authToken = $request->cookie('auth');
         if($authToken === null){
             return false;
