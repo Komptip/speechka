@@ -5,8 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 
@@ -26,12 +27,23 @@ use App\Http\Controllers\UserController;
 class AuthController extends Controller
 {
     public function SignUp(Request $request){
-        $validate = Validator::make($request->all(), [
-            'g-recaptcha-response' => 'required',
+        $validatorRules = [
             'name' => 'required|unique:users,username|max:30',
             'email' => 'required|email|unique:users,email|max:50',
-            'password' => 'required|min:6|max:30',
-        ],[
+            'password' => 'required|min:6|max:30'
+        ];
+
+        if(self::useRecaptcha()) {
+            if(!self::verifyRecaptcha($request->all()['g-recaptcha-response'])){
+                return [
+                    'action' => 'error',
+                    'data' => 'Капча не пройдена'
+                ];
+            }
+            $validatorRules['g-recaptcha-response'] = 'required';
+        }
+
+        $validate = Validator::make($request->all(), $validatorRules,[
             'name.required' => 'Имя объязательно',
             'name.unique' => 'Пользователь с таким именем уже существует',
             'name.max' => 'Длинна пароля не должна привышать 30 символов',
@@ -44,20 +56,12 @@ class AuthController extends Controller
             'g-recaptcha-response.required' => 'Капча объязательна'
         ]);
 
-        if(!self::verifyRecaptcha($request->all()['g-recaptcha-response'])){
-            return [
-                'action' => 'error',
-                'data' => 'Капча не пройдена'
-            ];
-        }
-
-
         if($validate->fails()){
             return [
                 'action' => 'error',
                 'data' => $validate->errors()->first()
             ];
-        }  
+        }
 
         $data = $request->all();
 
@@ -87,37 +91,41 @@ class AuthController extends Controller
     }
 
     public function logIn(Request $request){
-        $validate = Validator::make($request->all(), [
-            'g-recaptcha-response' => 'required',
+        $validatorRules = [
             'email' => 'required|email|max:50',
             'password' => 'required|max:30'
-        ],[
-            'email.required' => 'Почта объязательна',
+        ];
+
+        if(self::useRecaptcha()) {
+            if(!self::verifyRecaptcha($request->all()['g-recaptcha-response'])){
+                return [
+                    'action' => 'error',
+                    'data' => 'Капча не пройдена'
+                ];
+            }
+            $validatorRules['g-recaptcha-response'] = 'required';
+        }
+
+        $validate = Validator::make($request->all(), $validatorRules,[
+            'email.required' => 'Почта обязательна',
             'email.email' => 'Почта в неправильном формате',
             'email.max' => 'Почта не должна привышать 50 символов',
-            'password.required' => 'Пароль объязателен',
+            'password.required' => 'Пароль обязателен',
             'password.max' => 'Пароль не должен привышать 30 символов',
-            'g-recaptcha-response.required' => 'Капча объязательна'
+            'g-recaptcha-response.required' => 'Капча обязательна'
         ]);
-
-        if(!self::verifyRecaptcha($request->all()['g-recaptcha-response'])){
-            return [
-                'action' => 'error',
-                'data' => 'Капча не пройдена'
-            ];
-        }
 
         if($validate->fails()){
             return [
                 'action' => 'error',
                 'data' => $validate->errors()->first()
             ];
-        }  
+        }
 
         $data = $request->all();
 
         $user = Users::where(['email' => $data['email'], 'confirmed' => 1])->first();
-        
+
         if($user === null){
             return [
                 'action' => 'error',
@@ -146,34 +154,38 @@ class AuthController extends Controller
     }
 
     public function passwordReset(Request $request){
-        $validate = Validator::make($request->all(), [
-            'g-recaptcha-response' => 'required',
+        $validatorRules = [
             'email' => 'required|email|max:50'
-        ],[
+        ];
+
+        if(self::useRecaptcha()) {
+            if(!self::verifyRecaptcha($request->all()['g-recaptcha-response'])){
+                return [
+                    'action' => 'error',
+                    'data' => 'Капча не пройдена'
+                ];
+            }
+            $validatorRules['g-recaptcha-response'] = 'required';
+        }
+
+        $validate = Validator::make($request->all(), $validatorRules,[
             'email.required' => 'Почта объязательна',
             'email.email' => 'Почта в неправильном формате',
             'email.max' => 'Почта не должна привышать 50 символов',
             'g-recaptcha-response.required' => 'Капча объязательна'
         ]);
 
-        if(!self::verifyRecaptcha($request->all()['g-recaptcha-response'])){
-            return [
-                'action' => 'error',
-                'data' => 'Капча не пройдена'
-            ];
-        }
-
         if($validate->fails()){
             return [
                 'action' => 'error',
                 'data' => $validate->errors()->first()
             ];
-        }  
+        }
 
         $data = $request->all();
 
         $user = Users::where(['email' => $data['email'], 'confirmed' => 1])->first();
-        
+
         if($user === null){
             return [
                 'action' => 'error',
@@ -294,11 +306,18 @@ class AuthController extends Controller
         return false;
     }
 
-    public function verifyRecaptcha($key){
+    public static function useRecaptcha(){
+        if (!App::environment('local')) {
+            return true;
+        }
+        return false;
+    }
+
+    public static function verifyRecaptcha($key){
         $client = new \GuzzleHttp\Client();
         $response = $client->request('POST', 'https://www.google.com/recaptcha/api/siteverify', [
             'form_params' => [
-                'secret' => '6LfMf8YhAAAAADXnTPw3ypVVaVBmKNt-zBdA1SWS',
+                'secret' =>  config('speechka.recaptcha_secret'),
                 'response' => $key,
                 'remoteip' => $_SERVER['REMOTE_ADDR']
             ],
@@ -331,7 +350,10 @@ class AuthController extends Controller
 
         $authToken = Str::random(250);
 
-        $user = Users::where(['id' => $registrationConfirm->user_id])->first();
+        $user = Users::where(['id' => $registrationConfirm->user_id, 'confirmed' => 0])->first();
+        if ($user === null) {
+            abort(404);
+        }
         $user->confirmed = 1;
         $user->save();
 
@@ -342,7 +364,6 @@ class AuthController extends Controller
 
         RegistrationConfirmations::where(['id' => $registrationConfirm->id])->delete();
 
-    
         return redirect('/')->withCookie(cookie('auth', $authToken, 60 * 24 * 365));
     }
 
@@ -362,7 +383,7 @@ class AuthController extends Controller
                 'action' => 'error',
                 'data' => $validate->errors()->first()
             ];
-        }  
+        }
 
         $data = $request->all();
 
