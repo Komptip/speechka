@@ -39,6 +39,7 @@ var app = Vue.createApp(
 				communities: [],
 				communitiesSettings: {},
 				communitySettingsOpened: false,
+				scrolledToComments: false,
 				commentsreplies: {
 					'start': {
 						'attachment': false,
@@ -1235,6 +1236,29 @@ var app = Vue.createApp(
 						});
 
 						app.commentsIsLoading = false;
+
+						if(!sideComments && !app.scrolledToComments){
+							let urlParams = new URLSearchParams(window.location.search);
+							let findComment = urlParams.get('comment');
+
+							if(findComment !== null){
+								let scrollSelector = '';
+
+								if(findComment.length > 0){
+									scrollSelector = '#comment_' + findComment;
+					    		} else {
+									scrollSelector = '.comments-section';
+					    		}
+
+					    		app.$nextTick(function(){
+					    			let scrollElement = document.querySelector(scrollSelector);
+						    		window.scrollTo(0, scrollElement.offsetTop - 70);
+								});
+
+				    		}
+
+				    		app.scrolledToComments = true;
+			    		}
 					 });
 				}
 			},
@@ -1649,7 +1673,7 @@ var app = Vue.createApp(
 }).component('comment', {
 	props: ['app', 'id'],
 	template: `
-		<div class="comment">
+		<div class="comment" :id="'comment_' + id">
 			<div class="meta">
 				<div v-if="app.comments[id]['active']" class="icon" :style="'background-image: url(' + app.users[app.comments[id]['author_id']]['picture'] + ')'"  v-on:click="app.viewUserProfile(app.comments[id]['author_id'])">
 

@@ -65,10 +65,10 @@
 		</div>
 		<div class="data">
 			<div class="actions">
-				<div class="action" v-on:click="viewPost(post)">
+				<a class="action hidden" :href="`/p/${post['id']}?comments`">
 					<img src="/img/comment.svg">
 					<p>@{{ post['comments_count'] }}</p>
-				</div>
+				</a>
 				<div class="action" title="Поделиться" v-on:click="sharePost(post)">
 					<img src="/img/share.svg">
 				</div>

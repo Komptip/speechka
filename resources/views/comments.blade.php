@@ -30,7 +30,7 @@
 				<img :src="comments[commentID]['attachment']" />
 			</div>
 			<div class="bottom">
-				<p class="reply" v-on:click="viewCommentOrigin(comments[commentID]['post_id'])">Ответить</p>
+				<a class="reply hidden" :href="`/p/${comments[commentID]['post_id']}?comment=${commentID}`">Ответить</a>
 			</div>
 		</div>
 	</div>		
