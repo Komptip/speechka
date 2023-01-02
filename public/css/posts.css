@@ -301,6 +301,7 @@
 .posts .action p {
 	margin-left: 5px;
 	font-weight: 500;
+	color: black;
 }
 
 .posts .data .rating {

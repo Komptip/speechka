@@ -41,7 +41,7 @@
 
 .comment {
 
-	margin-top: 20px;
+	padding-top: 20px;
 
 	display: flex;
 	flex-direction: column;
@@ -51,6 +51,17 @@
 	height: 32px;
 
 	display: flex;
+}
+
+.comment.hightlight {
+	animation-name: hide;
+	animation-duration: 2s;
+}
+
+@keyframes hide {
+
+  from {background-color: rgba(207, 106, 135, 0.2);}
+  to {background-color: rgba(207, 106, 135, 0.0);}
 }
 
 .comment .meta .icon {

@@ -65,7 +65,7 @@
 		</div>
 		<div class="data">
 			<div class="actions">
-				<a class="action hidden" :href="`/p/${post['id']}?comments`">
+				<a class="action hidden" :href="`/p/${post['id']}?comment`">
 					<img src="/img/comment.svg">
 					<p>@{{ post['comments_count'] }}</p>
 				</a>

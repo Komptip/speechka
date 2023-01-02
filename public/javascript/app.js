@@ -256,7 +256,21 @@ var app = Vue.createApp(
 				el.select();
 				document.execCommand('copy');
 				document.body.removeChild(el);
-				app.throwMessage('Ссылка на пост скопирована', 'success');
+				app.throwMessage('Ссылка на пост скопирована', 'success');A
+			},
+			shareComment: function(comment){
+				let post = document.querySelector('meta[name="post-id"]').getAttribute('content');
+				const el = document.createElement('textarea');
+				el.value = window.location.hostname + '/p/' + post + '?comment=' + comment.id;
+				el.setAttribute('readonly', '');
+				el.style.position = 'absolute';
+				el.style.left = '-9999px';
+				document.body.appendChild(el);
+				el.select();
+				document.execCommand('copy');
+				document.body.removeChild(el);
+				app.throwMessage('Ссылка на комментарий скопирована', 'success');
+				comment.more = false;
 			},
 			hideMobileSidebar: function(event){
 				if(event.target.classList.contains('sidebar')){
@@ -1246,6 +1260,7 @@ var app = Vue.createApp(
 
 								if(findComment.length > 0){
 									scrollSelector = '#comment_' + findComment;
+
 					    		} else {
 									scrollSelector = '.comments-section';
 					    		}
@@ -1253,6 +1268,14 @@ var app = Vue.createApp(
 					    		app.$nextTick(function(){
 					    			let scrollElement = document.querySelector(scrollSelector);
 						    		window.scrollTo(0, scrollElement.offsetTop - 70);
+
+						    		if(findComment.length > 0){						    			
+										document.querySelector(scrollSelector).classList.add('hightlight');
+
+										setTimeout(function(){
+											document.querySelector(scrollSelector).classList.remove('hightlight');
+										}, 2000);
+						    		}
 								});
 
 				    		}
@@ -1716,8 +1739,7 @@ var app = Vue.createApp(
 				<div class="more">
 					<img src="/img/more.svg" class="btn" v-on:click="app.comments[id]['more'] = !app.comments[id]['more']">
 					<div v-if="app.comments[id]['more']" class="list">
-						<p>Копировать ссылку</p>
-						<p>Скрыть</p>
+						<p v-on:click="app.shareComment(app.comments[id])">Копировать ссылку</p>
 					</div>
 				</div>
 			</div>
