@@ -16,7 +16,7 @@
 					</div>
 				</div>
 				<div class="comment-text">
-					<p>@{{ sComments[comment]['content'] }}</p>
+					<p v-html="sComments[comment]['content']"></p>
 				</div>
 				<div class="attachment" v-if="sComments[comment]['attachment']" >
 					<img :src="sComments[comment]['attachment']" />

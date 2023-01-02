@@ -248,7 +248,7 @@ var app = Vue.createApp(
 			},
 			sharePost: function(post){
 				const el = document.createElement('textarea');
-				el.value = window.location.hostname + '/p/' + post.id;
+				el.value = 'https://' + window.location.hostname + '/p/' + post.id;
 				el.setAttribute('readonly', '');
 				el.style.position = 'absolute';
 				el.style.left = '-9999px';
@@ -261,7 +261,7 @@ var app = Vue.createApp(
 			shareComment: function(comment){
 				let post = document.querySelector('meta[name="post-id"]').getAttribute('content');
 				const el = document.createElement('textarea');
-				el.value = window.location.hostname + '/p/' + post + '?comment=' + comment.id;
+				el.value = 'https://' + window.location.hostname + '/p/' + post + '?comment=' + comment.id;
 				el.setAttribute('readonly', '');
 				el.style.position = 'absolute';
 				el.style.left = '-9999px';
@@ -1232,6 +1232,13 @@ var app = Vue.createApp(
 						});
 
 					 	data.forEach(function(comment){
+					 		console.log(comment['content']);
+					 		if(comment['content'] !== null){
+					 			comment['content'] = comment['content'].replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+						 		comment['content'] = comment['content'].replace(/(https?:\/\/[^\s]+)/g, function(url) {
+									return '<a href="' + url + '">' + url + '</a>';
+								});
+						 	}
 					 		if(!sideComments){
 						 		if(comment['sub_comments']){
 						 			comment['sub_comments']['opened'] = true;
@@ -1727,9 +1734,7 @@ var app = Vue.createApp(
 				</div>
 			</div>
 			<div class="comment-text">
-				<p>
-					{{ app.comments[id]['content'] }}
-				</p>
+				<p v-html="app.comments[id]['content']"></p>
 			</div>
 			<div class="attachment" v-if="app.comments[id]['attachment']" >
 				<img :src="app.comments[id]['attachment']" />
