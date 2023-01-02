@@ -642,4 +642,21 @@
 	.comments .open {
 		font-size: 40px;
 	}
+
+	.comment .bottom .more .btn {
+		max-width: 72px;
+	}
+
+	.comment .bottom .more .list {
+		width: 500px;
+		margin-top: 60px;
+		border-radius: 24px;
+	}
+
+	.comment .bottom .more .list p {
+		font-size: 42px;
+		padding-top: 20px;
+		padding-left: 30px;
+		padding-bottom: 20px;
+	}
 }
