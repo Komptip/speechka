@@ -1,7 +1,7 @@
 <div class="sidecomments" v-if="!sideCommentsHidden">
 	<h3 v-on:click="sideCommentsHidden = true">Комменарии</h3>
 	<template v-if="sideComments && sideCommentsPostsTitles">
-		<div class="comment" v-for="comment in sideComments" v-on:click="viewCommentOrigin(sComments[comment].post_id)">
+		<div class="comment" v-for="comment in sideComments" v-on:click="viewCommentOrigin(sComments[comment])">
 			<div class="comment-post">
 				<p>@{{ sideCommentsPostsTitles[sComments[comment].post_id] }}</p>
 			</div>

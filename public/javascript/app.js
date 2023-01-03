@@ -298,8 +298,8 @@ var app = Vue.createApp(
 			viewUserProfile: function(id){
 				window.location.href = '/u/' + id;
 			},
-			viewCommentOrigin: function(id){
-				window.location.href = '/p/' + id;
+			viewCommentOrigin: function(comment){
+				window.location.href = '/p/' + comment.post_id + '?comment=' + comment.id;
 			},
 			deletePost: function(post){
 				post.showMore = false;
